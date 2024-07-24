@@ -1,17 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>hello world twice</title>
-    <url>/2024/06/03/hello-world-twice/</url>
-    <content><![CDATA[<p><del>这里记下一点杂谈吧</del></p>
-<h1 id="2024-7-24"><a href="#2024-7-24" class="headerlink" title="2024&#x2F;7&#x2F;24"></a>2024&#x2F;7&#x2F;24</h1>]]></content>
-      <tags>
-        <tag>建立博客</tag>
-        <tag>hexo</tag>
-        <tag>next</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>2024.7.24份题解</title>
     <url>/2024/07/24/2024_7_24%E4%BB%BD%E9%A2%98%E8%A7%A3/</url>
     <content><![CDATA[<h1 id="T1-最短路"><a href="#T1-最短路" class="headerlink" title="T1 最短路"></a>T1 最短路</h1><blockquote>
@@ -30,6 +19,17 @@
 ]]></content>
       <tags>
         <tag>题解汇总</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hello world twice</title>
+    <url>/2024/06/03/hello-world-twice/</url>
+    <content><![CDATA[<p><del>这里记下一点杂谈吧</del></p>
+<h1 id="2024-7-24"><a href="#2024-7-24" class="headerlink" title="2024&#x2F;7&#x2F;24"></a>2024&#x2F;7&#x2F;24</h1>]]></content>
+      <tags>
+        <tag>建立博客</tag>
+        <tag>hexo</tag>
+        <tag>next</tag>
       </tags>
   </entry>
   <entry>
