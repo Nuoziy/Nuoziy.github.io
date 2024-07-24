@@ -60,4 +60,40 @@
         <tag>线段树</tag>
       </tags>
   </entry>
+  <entry>
+    <title>线段树专题(动态开点线段树, 权值线段树, 线段树合并, 可持久化线段树)</title>
+    <url>/2024/07/24/%E5%8A%A8%E6%80%81%E5%BC%80%E7%82%B9%E7%BA%BF%E6%AE%B5%E6%A0%91%E7%AD%89/</url>
+    <content><![CDATA[<h1 id="动态开点线段树"><a href="#动态开点线段树" class="headerlink" title="动态开点线段树"></a>动态开点线段树</h1><p>动态开点线段树应用于需要维护的数列长度过大, 正常线段树存不下的时候.<br>我们需要动态的开点, 因此不能用 rt&lt;&lt;1 和 rt&lt;&lt;1|1 来表示左右子节点, 而需要在 node 中记录 lson 和 rson 的编号, 如下.</p>
+ <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">node</span> </span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> l, r, val, lazy;</span><br><span class="line">&#125;st[maxn];</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>update 时如果需要开点则开点. </p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">update</span><span class="params">(<span class="type">int</span> &amp;rt, <span class="type">int</span> l, <span class="type">int</span> r, ...)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(!rt) rt = ++cnt;</span><br><span class="line">    <span class="keyword">if</span>(l == r)</span><br><span class="line">        <span class="keyword">return</span> ;</span><br><span class="line">    <span class="keyword">if</span>() <span class="built_in">update</span>(...);</span><br><span class="line">    <span class="keyword">if</span>() <span class="built_in">update</span>(...);</span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line">    <span class="built_in">pushup</span>(rt);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>查询时同理.</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">ask</span><span class="params">(<span class="type">int</span> rt, <span class="type">int</span> l, <span class="type">int</span> r, <span class="type">int</span> L, <span class="type">int</span> R...)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(!rt) <span class="keyword">return</span> <span class="number">0</span>; </span><br><span class="line">    <span class="keyword">if</span>(l &lt;= L &amp;&amp; R &lt;= r)</span><br><span class="line">    &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> val;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="权值线段树"><a href="#权值线段树" class="headerlink" title="权值线段树"></a>权值线段树</h1><p>什么是权值线段树?</p>
+<blockquote>
+<p>以权值为维护信息的线段树，本质仍是线段树。、</p>
+</blockquote>
+<p>不同于普通线段树维护的区间信息, 权值线段树维护的是固定值域内的元素的个数.<br><del>这不就是桶嘛</del></p>
+<p>举个栗子<br>有个数列 $ 1, 1, 2, 2, 2, 3, 3, 4, 5 $<br>节点 $ [1, 1] $ 的值为 2 代表数列中位于 $ [1, 1] $ 的数有 2 个.<br>同理节点 $ [1, 2] $ 的值为 5 , $ [1, 5] $ 的值为 9 .</p>
+<h1 id="主席树（可持久化线段树）"><a href="#主席树（可持久化线段树）" class="headerlink" title="主席树（可持久化线段树）"></a>主席树（可持久化线段树）</h1><blockquote>
+<p>主席树是一种<del>霸气的</del>，持久的，基于线段树的数据结构。</p>
+</blockquote>
+<p>可持久化线段树, 顾名思义, 就是支持回退操作的线段树(<del>完全理解不了好不好</del>)</p>
+<p>主席树由权值线段树引申而来, 可以维护区间第k小.<br>思想是开一个 root[] 数组存储 i 版本的根节点.<br>每次更新时对于需要更新的节点直接新建, 对于不需要更新的节点直接连到更新的节点上.</p>
+<p><del>代码待更</del></p>
+<p>#线段树合并</p>
+<p>待更</p>
+<p>#例题</p>
+<p>待更</p>
+]]></content>
+      <tags>
+        <tag>线段树</tag>
+        <tag>动态开点线段树</tag>
+        <tag>权值线段树</tag>
+        <tag>线段树合并</tag>
+        <tag>可持久化线段树</tag>
+      </tags>
+  </entry>
 </search>
