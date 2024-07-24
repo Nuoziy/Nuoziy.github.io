@@ -3,8 +3,8 @@
   <entry>
     <title>hello world twice</title>
     <url>/2024/06/03/hello-world-twice/</url>
-    <content><![CDATA[<p>这是破站<a href="https://www.bilibili.com/">bilibili</a><br>这是边缘<a href="https://www.bing.com/">edge</a> </p>
-]]></content>
+    <content><![CDATA[<p><del>这里记下一点杂谈吧</del></p>
+<h1 id="2024-7-24"><a href="#2024-7-24" class="headerlink" title="2024&#x2F;7&#x2F;24"></a>2024&#x2F;7&#x2F;24</h1>]]></content>
       <tags>
         <tag>建立博客</tag>
         <tag>hexo</tag>
@@ -12,7 +12,7 @@
       </tags>
   </entry>
   <entry>
-    <title>hello world twice</title>
+    <title>扫描线</title>
     <url>/2024/07/24/%E6%89%AB%E6%8F%8F%E7%BA%BF/</url>
     <content><![CDATA[<p>from OI-WIKI</p>
 <h1 id="题意"><a href="#题意" class="headerlink" title="题意"></a>题意</h1><p>在二维坐标系上，给出多个矩形的左下以及右上坐标，求出所有矩形构成的图形的面积。</p>
