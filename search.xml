@@ -1,29 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>2024.7.24份题解</title>
-    <url>/2024/07/24/2024_7_24%E4%BB%BD%E9%A2%98%E8%A7%A3/</url>
-    <content><![CDATA[<h1 id="T1-最短路"><a href="#T1-最短路" class="headerlink" title="T1 最短路"></a>T1 最短路</h1><blockquote>
-<p>给定一个包含 $ n $ 个节点和 $ m $ 条边的图，每条边有一个权值。<br>你的任务是回答 $ k $ 个询问，每个询问包含两个正整数 $ s $ 和 $ t $ 表示起点和终点，要求寻找从 $ s $ 到 $ t $ 的一条路径，使得路径上权值最大的一条边权值最小。</p>
-</blockquote>
-<ol>
-<li>最短路一定在最小生成树上</li>
-<li>跑一遍 $ prim $ ，顺便更新 $ ans $</li>
-</ol>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ll long long</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> int long long</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> maxn 1020</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> rep(i, a, b) for(int i = (a); i &lt;= (b); i ++)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> love return</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> you 0</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> inf 0x3f3f3f3f</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> me 1</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> dist[maxn];</span><br><span class="line"><span class="type">int</span> n,m,k;</span><br><span class="line"><span class="type">int</span> cosent[maxn][maxn];</span><br><span class="line"><span class="type">int</span> ans[maxn][maxn];</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> to[maxn];</span><br><span class="line"><span class="type">bool</span> f[maxn];</span><br><span class="line"></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="type">signed</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">freopen</span>(<span class="string">&quot;a.in&quot;</span>, <span class="string">&quot;r&quot;</span>, stdin);</span><br><span class="line">    <span class="built_in">freopen</span>(<span class="string">&quot;a.out&quot;</span>, <span class="string">&quot;w&quot;</span>, stdout);</span><br><span class="line"></span><br><span class="line">    cin &gt;&gt; n &gt;&gt; m &gt;&gt; k;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">memset</span>(cosent, inf, <span class="built_in">sizeof</span>(cosent));</span><br><span class="line">    <span class="built_in">memset</span>(ans,<span class="number">0</span>, <span class="built_in">sizeof</span>(ans));</span><br><span class="line"></span><br><span class="line">    <span class="built_in">rep</span>(i, <span class="number">0</span>, n)</span><br><span class="line">    &#123;</span><br><span class="line">        to[i] = i;</span><br><span class="line">        dist[i] = inf; </span><br><span class="line">        cosent[i][i] = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">rep</span>(i, <span class="number">1</span>, m)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> u, v, w;</span><br><span class="line">        cin &gt;&gt; u &gt;&gt; v &gt;&gt; w;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(cosent[u][v] &gt; w)</span><br><span class="line">        &#123;</span><br><span class="line">            cosent[u][v] = cosent[v][u] = w;</span><br><span class="line">        &#125;    </span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    dist[<span class="number">1</span>] = <span class="number">0</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">rep</span>(i, <span class="number">1</span>, n)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> mx = inf;</span><br><span class="line">        <span class="type">int</span> v = <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">rep</span>(j, <span class="number">1</span>, n) </span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(!f[j] &amp;&amp; dist[j] &lt; mx)</span><br><span class="line">            &#123;</span><br><span class="line">                v = j;</span><br><span class="line">                mx = dist[j];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(v==<span class="number">-1</span>) <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">rep</span>(j, <span class="number">1</span>, n) </span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(f[j])</span><br><span class="line">            &#123;</span><br><span class="line">                ans[v][j] = ans[j][v] = <span class="built_in">max</span>(ans[to[v]][j], mx);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        f[v] = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="built_in">rep</span>(j, <span class="number">1</span>, n) </span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(!f[j] &amp;&amp; cosent[v][j] &lt; dist[j])</span><br><span class="line">            &#123;</span><br><span class="line">                dist[j] = cosent[v][j];</span><br><span class="line">                to[j] = v;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">rep</span>(i, <span class="number">1</span>, k)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> u, v; cin &gt;&gt; u &gt;&gt; v; </span><br><span class="line">        cout &lt;&lt; (ans[u][v] == <span class="number">0</span> ? <span class="number">-1</span> : ans[u][v]) &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    love you;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h1 id="T2-序列"><a href="#T2-序列" class="headerlink" title="T2 序列"></a>T2 序列</h1><blockquote>
-<p>有一个长度为 $ n $ 的数列 $ a_1,…,a_n $, 其中对任意 $ 1 \leq i \leq n $ :<br>• 若 $ i $ 为奇数, 那么 $ a_i = \frac{i+1}{2} $.<br>• 否则 $ z_i = n + 1 - \frac{i}{2} $.<br>你需要回答q次询问, 每次询问会给定一个特定的数 $ s $, 请你求出有多少对 $ (l, r) $ 满足 $ 1 \leq l \leq r \leq n $ 且 $ \sum_{i=l}^{r}a_i = s $.</p>
-</blockquote>
-<p>显然当 $l, r$ 分别取奇偶, 偶奇, 奇奇, 偶偶时存在规律. </p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">signed</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">freopen</span>(<span class="string">&quot;sequence.in&quot;</span>, <span class="string">&quot;r&quot;</span>, stdin);</span><br><span class="line">    <span class="built_in">freopen</span>(<span class="string">&quot;sequence.out&quot;</span>, <span class="string">&quot;w&quot;</span>, stdout);</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> n, q; cin &gt;&gt; n &gt;&gt; q;</span><br><span class="line">    <span class="keyword">while</span>(q --)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">long</span> <span class="type">long</span> <span class="type">int</span> s; cin &gt;&gt; s;</span><br><span class="line">        <span class="type">long</span> <span class="type">long</span> <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> a = s % (n + <span class="number">1</span>), b = s % (n + <span class="number">2</span>);</span><br><span class="line">        <span class="keyword">if</span>(a == <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            ans += <span class="built_in">max</span>(<span class="number">0ll</span>, n / <span class="number">2</span> - (s / (n + <span class="number">1</span>)) + <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(a * <span class="number">2</span> - <span class="number">1</span> &lt;= n)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>((a * <span class="number">2</span> - <span class="number">1</span>) - <span class="number">2</span> * (s / (n + <span class="number">1</span>)) &gt;= <span class="number">1</span>) ans ++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(b == <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            ans += <span class="built_in">max</span>(<span class="number">0ll</span>, (n - <span class="number">1</span>) / <span class="number">2</span> - (s / (n + <span class="number">2</span>)) + <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(b * <span class="number">2</span> - <span class="number">1</span> &gt; n) </span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>((n - b + <span class="number">1</span>) * <span class="number">2</span> - <span class="number">2</span> * (s / (n + <span class="number">2</span>)) &gt;= <span class="number">1</span>) ans ++;</span><br><span class="line">            </span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        cout &lt;&lt; ans &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="T3-函数"><a href="#T3-函数" class="headerlink" title="T3 函数"></a>T3 函数</h1><p>数位dp，待更</p>
-<h1 id="T3-游戏"><a href="#T3-游戏" class="headerlink" title="T3 游戏"></a>T3 游戏</h1><p>nim游戏，待更</p>
-]]></content>
-      <tags>
-        <tag>题解汇总</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>AC绿题整理</title>
     <url>/2024/07/30/ak%E7%BB%BF%E9%A2%98%E8%AE%A1%E5%88%92/</url>
     <content><![CDATA[<h2 id="P1131ZJOI2007"><a href="#P1131ZJOI2007" class="headerlink" title="P1131ZJOI2007"></a><a href="https://www.luogu.com.cn/problem/P1131">P1131ZJOI2007</a></h2><p>首先可以感性证明这是一颗树, 发现可以贪心地做, 记录一个max, 当子树中的每一个叶子节点都需要补全的时候最优在子树的根与他父亲的边增加长度, 附上代码.<br><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> int long long</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> maxn 500001</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> rep(i, a, b) for(int i = (a); i &lt;= (b); i ++)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> inf 0x3f3f3f3f</span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> n, s;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> leaf[maxn], tim;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> head[maxn], nxt[maxn&lt;&lt;<span class="number">1</span>], dat[maxn&lt;&lt;<span class="number">1</span>], cnt, val[maxn&lt;&lt;<span class="number">1</span>];</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">add</span><span class="params">(<span class="type">int</span> u, <span class="type">int</span> v, <span class="type">int</span> w)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    dat[++ cnt] = v; nxt[cnt] = head[u]; head[u] = cnt; val[cnt] = w;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> lg[maxn];</span><br><span class="line"></span><br><span class="line"><span class="type">long</span> <span class="type">long</span> ans = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">dfs</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> fa)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> cnt = <span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> mx = -inf;</span><br><span class="line">    <span class="type">int</span> sum = <span class="number">0</span>; </span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = head[x]; i; i = nxt[i])</span><br><span class="line">    &#123; </span><br><span class="line">        <span class="type">int</span> da = dat[i];</span><br><span class="line">        <span class="keyword">if</span>(da == fa) <span class="keyword">continue</span>; </span><br><span class="line">        lg[da] = lg[x] + val[i];</span><br><span class="line">        <span class="type">int</span> t = <span class="built_in">dfs</span>(da, x);</span><br><span class="line">        <span class="comment">// if(x == 4) cout &lt;&lt; t &lt;&lt; endl;</span></span><br><span class="line">        sum += t;</span><br><span class="line">        mx = <span class="built_in">max</span>(mx, t);</span><br><span class="line">        </span><br><span class="line">        cnt ++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(mx == -inf) mx = lg[x];</span><br><span class="line">    ans += mx*cnt - sum;</span><br><span class="line">    <span class="comment">// cout &lt;&lt; x &lt;&lt; &quot; &quot; &lt;&lt; mx &lt;&lt; &quot; &quot; &lt;&lt; cnt &lt;&lt; &quot; &quot; &lt;&lt; sum &lt;&lt; &quot; &quot; &lt;&lt; mx*cnt - sum &lt;&lt; endl;</span></span><br><span class="line">    <span class="keyword">return</span> mx;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">signed</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">freopen</span>(<span class="string">&quot;a.in&quot;</span>, <span class="string">&quot;r&quot;</span>, stdin);</span><br><span class="line">    <span class="built_in">freopen</span>(<span class="string">&quot;a.out&quot;</span>, <span class="string">&quot;w&quot;</span>, stdout);</span><br><span class="line">    cin &gt;&gt; n &gt;&gt; s;</span><br><span class="line">    <span class="built_in">rep</span>(i, <span class="number">1</span>, n - <span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> u, v, w; cin &gt;&gt; u &gt;&gt; v &gt;&gt; w;</span><br><span class="line">        <span class="built_in">add</span>(u, v, w);</span><br><span class="line">        <span class="built_in">add</span>(v, u, w);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">dfs</span>(s, <span class="number">0</span>); </span><br><span class="line">    cout &lt;&lt; ans &lt;&lt; endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
@@ -31,6 +8,102 @@
       <tags>
         <tag>结合</tag>
         <tag>绿题</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hello world twice</title>
+    <url>/2024/06/03/hello-world-twice/</url>
+    <content><![CDATA[<p><del>这里记下一点杂谈吧</del></p>
+<h1 id="2024-7-24"><a href="#2024-7-24" class="headerlink" title="2024/7/24"></a>2024/7/24</h1>]]></content>
+      <tags>
+        <tag>建立博客</tag>
+        <tag>hexo</tag>
+        <tag>next</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>欧几里得算法, 中国剩余定理</title>
+    <url>/2024/07/24/shulun/</url>
+    <content><![CDATA[<h1 id="关于gcd-最大公约数-的欧几里得算法"><a href="#关于gcd-最大公约数-的欧几里得算法" class="headerlink" title="关于gcd(最大公约数)的欧几里得算法"></a>关于gcd(最大公约数)的欧几里得算法</h1><h2 id="朴素的欧几里得算法"><a href="#朴素的欧几里得算法" class="headerlink" title="朴素的欧几里得算法"></a>朴素的欧几里得算法</h2><p>欧几里得算法依赖于一个朴素的公式:</p>
+<script type="math/tex; mode=display">
+gcd(a, b) = gcd(b, a \% b)</script><p>如果 $ a, b $ 的最大公约数为 $c$ , 那么 $ a, a mod b $ 的最大公约数也为 $c$ .<br>易于理解的, $ gcd(a, b) \times lcm(a, b) = a \times b $ .<br>C++的代码实现:</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">gcd</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span> b)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (b ? a : <span class="built_in">gcd</span>(b, a % b));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="exgcd-拓展欧几里得算法"><a href="#exgcd-拓展欧几里得算法" class="headerlink" title="exgcd(拓展欧几里得算法)"></a>exgcd(拓展欧几里得算法)</h2><h3 id="exgcd是干什么的"><a href="#exgcd是干什么的" class="headerlink" title="exgcd是干什么的"></a>exgcd是干什么的</h3><p>exgcd可以用于求解如下式子:</p>
+<script type="math/tex; mode=display">
+    ax + by = gcd(a, b) \tag{1}</script><p>或者</p>
+<script type="math/tex; mode=display">
+    ax \equiv gcd(a, b) \pmod{b}</script><p>然后进一步求解如下的情况:</p>
+<script type="math/tex; mode=display">
+    ax + by = c</script><p>显然只要把第一个式子乘上 $ \frac{c}{gcd(a, b)} $ 就可以.</p>
+<p>那我们如何求解呢<br>我们设 $d = gcd(a, b) $.<br>首先我们知道如下式显然成立:</p>
+<script type="math/tex; mode=display">
+    a \% b = a - \lfloor \frac{a}{b} \rfloor \times b \tag{2}</script><p>考虑 $ gcd(a, b) $ 的求解过程:</p>
+<script type="math/tex; mode=display">
+gcd(a, b) = gcd(b, a \% b)</script><p>我们可以设想一个式子:</p>
+<script type="math/tex; mode=display">
+    bx' + (a \% b)y' = d \tag{3}</script><p>把 $(1)$ 式代入 $(2)$ 式:</p>
+<script type="math/tex; mode=display">
+    bx' + (a - \lfloor \frac{a}{b} \rfloor \times b)y' = d</script><p>化简得:</p>
+<script type="math/tex; mode=display">
+    bx' + ay' - \lfloor \frac{a}{b} \rfloor \times b \times y' = d</script><p>再合并得:</p>
+<script type="math/tex; mode=display">
+    b(x' + \lfloor \frac{a}{b} \rfloor  y') + ay' = d \tag{4}</script><p>显然 $(4)$ 式和 $(1)$ 式是等价的.<br>于是我们便根据 $(4)$ 推出了 $(1)$ 的解.<br>显然一定有一组解在 $ ({a, b} )= ({1, 0}) $ 下 $ ax + by = gcd(a, b) $ 成立<br>于是我们便可以递归的写出代码:</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">std::pair &lt;<span class="type">int</span>, <span class="type">int</span>&gt; <span class="built_in">exgcd</span>(<span class="type">int</span> a, <span class="type">int</span> b) &#123;</span><br><span class="line">    <span class="keyword">if</span>(b == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="number">1</span>, <span class="number">0</span>&#125;;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">auto</span> [x, y] = <span class="built_in">exgcd</span>(b, b % a);</span><br><span class="line">    <span class="keyword">return</span> &#123;y, x - a/b * y&#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="exgcd求逆元"><a href="#exgcd求逆元" class="headerlink" title="exgcd求逆元"></a>exgcd求逆元</h3><p>定义一个同余方程 $ ax \equiv 1 \pmod{ b}$, 即 $ax + by = 1$ , 显然 $a, x$ 互为逆元.<br>运行 $exgcd(a, m) $ 即可.</p>
+<h3 id="附-裴蜀定理-Bezout’s-Identity"><a href="#附-裴蜀定理-Bezout’s-Identity" class="headerlink" title="附: 裴蜀定理 (Bézout’s Identity)"></a>附: 裴蜀定理 (Bézout’s Identity)</h3><p>如果 $gcd(a, b) \nmid c $, 则原方程无整数解.</p>
+<h1 id="中国剩余定理-CRT"><a href="#中国剩余定理-CRT" class="headerlink" title="中国剩余定理(CRT)"></a>中国剩余定理(CRT)</h1><h2 id="朴素的中国剩余定理解决同余方程组"><a href="#朴素的中国剩余定理解决同余方程组" class="headerlink" title="朴素的中国剩余定理解决同余方程组"></a>朴素的中国剩余定理解决同余方程组</h2><h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><p>例如对于以下的一元线性同余方程组：</p>
+<script type="math/tex; mode=display">
+\left \{
+    \begin{aligned}
+    x &\equiv a_{1} \pmod{m_{1}}  \\
+    x &\equiv a_{2} \pmod{m_{2}}  \\
+    &\vdots                       \\
+    x &\equiv a_{n} \pmod{m_{n}}  \\
+    \end{aligned}
+\right.</script><p>中国剩余定理给出了它的有解的判定条件, 并用构造法给出了在有解情况下解的具体形式.<br>中国剩余定理说明: 假设整数 $ m_1, m_2, … , m_n $ 其中任两数互质，则对任意的整数: $ a_1, a_2, … , a_n$ , 方程组有解，并且通解可以用如下方式构造得到:</p>
+<ol>
+<li>设 $ M = \prod_{i = 1}^{n} m_i, \ M_i = \frac{M}{m_i}$. 显然 $ M_i$ 是除 $m_i$ 之外 $m$ 集合中所有的元素的乘积.</li>
+<li>设 $t_i = M_{i}^{-1}$ , 即 $M_i$ 在 $\%m_i$ 意义下的倒数, 使得 $t_i \cdot M_i  \equiv 1 \pmod{m_i} $.</li>
+<li>则 $x = kM + \sum_{i = 1}^{n}a_i t_i M_i$.</li>
+</ol>
+<h3 id="证明"><a href="#证明" class="headerlink" title="证明"></a>证明</h3><p>易于理解的, $(a \cdot b) \% m = (a \% m) \cdot (b \% m), \ \ \ (a + b) \% m = (a \% m) + (b \% m)$.<br>对于给定的 $ i $, 有 $ \   \ t_i \cdot M_i  \equiv 1 \pmod{m_i} $, 所以有 $ {a_i t_i M_t} \equiv a_i \pmod{m_i} $<br>而对于任意 $j \neq i $ , $ {a_i t_i M_t} \equiv 0 \pmod{m_i} $<br>显然 $\sum_{i = 1}^{n}a_i t_i M_i$ 是方程的一个解.<br>因为 $\forall i, M \% a_i = 0$, 所以 $k \cdot M + \sum_{i = 1}^{n}a_i t_i M_i$ 也是方程的解.</p>
+<p>附上代码:</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> _crt(<span class="type">int</span> k) &#123;</span><br><span class="line">    <span class="type">int</span> prod = <span class="number">1</span>, ans = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt;= k; i ++) prod *= m[i];</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt;= k; i ++) &#123;</span><br><span class="line">        <span class="type">int</span> mi = prod / m[i];</span><br><span class="line">        <span class="keyword">auto</span> [x, y] = <span class="built_in">exgcd</span>(mi, m[i]);</span><br><span class="line">        ans += (a[i] * mi * x % prod);</span><br><span class="line">        ans %= prod;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> (ans % prod + prod) % prod;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="exCRT"><a href="#exCRT" class="headerlink" title="exCRT"></a>exCRT</h2><h3 id="裴蜀等式"><a href="#裴蜀等式" class="headerlink" title="裴蜀等式"></a>裴蜀等式</h3><p>对于任意两个整数 ( a ) 和 ( b )，以及它们的最大公约数 ( d )，裴祖等式<strong>一定</strong>可以写成：</p>
+<script type="math/tex; mode=display">
+d = \gcd(a, b) = ax + by</script><p>一个重要推论: $(a, b)$ 互质的条件是存在整数 $(x, y)$ 使得 $ax + by = 1$.</p>
+<h3 id="证明-1"><a href="#证明-1" class="headerlink" title="证明"></a>证明</h3><p>考虑简单形式:</p>
+<script type="math/tex; mode=display">
+\left \{
+    \begin{aligned}
+    x &\equiv a_{1} \pmod{m_{1}}  \\
+    x &\equiv a_{2} \pmod{m_{2}}  \\ 
+    \end{aligned}
+\right.</script><p>可转化为:</p>
+<script type="math/tex; mode=display">
+\left \{
+    \begin{aligned}
+    x = ka_1 + m_1 \\
+    x = ka_2 + m_2 \\ 
+    \end{aligned}
+\right. \\
+\ \ \ \ \ \ \ \ \ \ \ \Rightarrow x = k_1 m_1 + a_1 = k_2 m_2 + a_2 \\
+\Rightarrow k_1 m_1 - k_2 m_2 = a_2 - a_1</script><p>根据 $Bézout’s Identity$ 若 $ gcd(m_1, m_2) \mid a_2 - a_1 $ 则原方程有解.<br>如果有解, 设 $ d = gcd(m_1,m_2) , p_1 = \frac{m_1}{d}, p_2 = \frac{m_2}{d}$</p>
+<script type="math/tex; mode=display">
+\Rightarrow k_1p_1 - k_2p_2 =   \frac{ a_2 - a_1 }{d} 
+\Rightarrow \frac{k_1d}{a_2 - a_1}p_1 - \frac{k_2d}{a_2-a_1}p_2 = 1;</script><p>显然 $gcd(p_1,p_2) = 1$ 可以用exgcd求解.<br>我们设该方程的一组解 $x, y$<br>$k_1 = \frac{x(a_2-a_1)}{d}, x = \frac{m_1x(a_2-a_1)}{d} + a_1$<br>原方程即转化为 :</p>
+<script type="math/tex; mode=display">
+    x \equiv \frac{m_1 x (a_2 - a_1)}{d} \pmod {lcm(m_1, m_2)}</script><p>我们只要把方程转化 $n - 1$ 次就可以解决问题.<br>复杂度为 $\mathcal O((n - 1)\log n)$</p>
+<h1 id="Lucas定理"><a href="#Lucas定理" class="headerlink" title="Lucas定理"></a>Lucas定理</h1><p>Lucas定理用于求解大组合数取模的问题, 其中模数必须为素数.</p>
+<h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><script type="math/tex; mode=display">
+    \binom{n}{m} \bmod p = \binom{\lfloor n / p\rfloor}{\lfloor m / p\rfloor} \cdot \binom{n \bmod p}{m \bmod p} \bmod p</script><p>对于 $  \binom{\lfloor n / p\rfloor}{\lfloor m / p\rfloor} $ 可以递归求解.</p>
+<h2 id="证明-2"><a href="#证明-2" class="headerlink" title="( 证明 )"></a><del>( 证明 )</del></h2><p><del>艹我不会</del></p>
+]]></content>
+      <tags>
+        <tag>数论</tag>
+        <tag>gcd</tag>
+        <tag>欧几里得算法</tag>
+        <tag>中国剩余定理</tag>
       </tags>
   </entry>
   <entry>
@@ -67,14 +140,26 @@
       </tags>
   </entry>
   <entry>
-    <title>hello world twice</title>
-    <url>/2024/06/03/hello-world-twice/</url>
-    <content><![CDATA[<p><del>这里记下一点杂谈吧</del></p>
-<h1 id="2024-7-24"><a href="#2024-7-24" class="headerlink" title="2024/7/24"></a>2024/7/24</h1>]]></content>
+    <title>2024.7.24份题解</title>
+    <url>/2024/07/24/2024_7_24%E4%BB%BD%E9%A2%98%E8%A7%A3/</url>
+    <content><![CDATA[<h1 id="T1-最短路"><a href="#T1-最短路" class="headerlink" title="T1 最短路"></a>T1 最短路</h1><blockquote>
+<p>给定一个包含 $ n $ 个节点和 $ m $ 条边的图，每条边有一个权值。<br>你的任务是回答 $ k $ 个询问，每个询问包含两个正整数 $ s $ 和 $ t $ 表示起点和终点，要求寻找从 $ s $ 到 $ t $ 的一条路径，使得路径上权值最大的一条边权值最小。</p>
+</blockquote>
+<ol>
+<li>最短路一定在最小生成树上</li>
+<li>跑一遍 $ prim $ ，顺便更新 $ ans $</li>
+</ol>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ll long long</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> int long long</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> maxn 1020</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> rep(i, a, b) for(int i = (a); i &lt;= (b); i ++)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> love return</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> you 0</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> inf 0x3f3f3f3f</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> me 1</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> dist[maxn];</span><br><span class="line"><span class="type">int</span> n,m,k;</span><br><span class="line"><span class="type">int</span> cosent[maxn][maxn];</span><br><span class="line"><span class="type">int</span> ans[maxn][maxn];</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> to[maxn];</span><br><span class="line"><span class="type">bool</span> f[maxn];</span><br><span class="line"></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="type">signed</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">freopen</span>(<span class="string">&quot;a.in&quot;</span>, <span class="string">&quot;r&quot;</span>, stdin);</span><br><span class="line">    <span class="built_in">freopen</span>(<span class="string">&quot;a.out&quot;</span>, <span class="string">&quot;w&quot;</span>, stdout);</span><br><span class="line"></span><br><span class="line">    cin &gt;&gt; n &gt;&gt; m &gt;&gt; k;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">memset</span>(cosent, inf, <span class="built_in">sizeof</span>(cosent));</span><br><span class="line">    <span class="built_in">memset</span>(ans,<span class="number">0</span>, <span class="built_in">sizeof</span>(ans));</span><br><span class="line"></span><br><span class="line">    <span class="built_in">rep</span>(i, <span class="number">0</span>, n)</span><br><span class="line">    &#123;</span><br><span class="line">        to[i] = i;</span><br><span class="line">        dist[i] = inf; </span><br><span class="line">        cosent[i][i] = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">rep</span>(i, <span class="number">1</span>, m)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> u, v, w;</span><br><span class="line">        cin &gt;&gt; u &gt;&gt; v &gt;&gt; w;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(cosent[u][v] &gt; w)</span><br><span class="line">        &#123;</span><br><span class="line">            cosent[u][v] = cosent[v][u] = w;</span><br><span class="line">        &#125;    </span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    dist[<span class="number">1</span>] = <span class="number">0</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">rep</span>(i, <span class="number">1</span>, n)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> mx = inf;</span><br><span class="line">        <span class="type">int</span> v = <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">rep</span>(j, <span class="number">1</span>, n) </span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(!f[j] &amp;&amp; dist[j] &lt; mx)</span><br><span class="line">            &#123;</span><br><span class="line">                v = j;</span><br><span class="line">                mx = dist[j];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(v==<span class="number">-1</span>) <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">rep</span>(j, <span class="number">1</span>, n) </span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(f[j])</span><br><span class="line">            &#123;</span><br><span class="line">                ans[v][j] = ans[j][v] = <span class="built_in">max</span>(ans[to[v]][j], mx);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        f[v] = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="built_in">rep</span>(j, <span class="number">1</span>, n) </span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(!f[j] &amp;&amp; cosent[v][j] &lt; dist[j])</span><br><span class="line">            &#123;</span><br><span class="line">                dist[j] = cosent[v][j];</span><br><span class="line">                to[j] = v;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">rep</span>(i, <span class="number">1</span>, k)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> u, v; cin &gt;&gt; u &gt;&gt; v; </span><br><span class="line">        cout &lt;&lt; (ans[u][v] == <span class="number">0</span> ? <span class="number">-1</span> : ans[u][v]) &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    love you;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="T2-序列"><a href="#T2-序列" class="headerlink" title="T2 序列"></a>T2 序列</h1><blockquote>
+<p>有一个长度为 $ n $ 的数列 $ a_1,…,a_n $, 其中对任意 $ 1 \leq i \leq n $ :<br>• 若 $ i $ 为奇数, 那么 $ a_i = \frac{i+1}{2} $.<br>• 否则 $ z_i = n + 1 - \frac{i}{2} $.<br>你需要回答q次询问, 每次询问会给定一个特定的数 $ s $, 请你求出有多少对 $ (l, r) $ 满足 $ 1 \leq l \leq r \leq n $ 且 $ \sum_{i=l}^{r}a_i = s $.</p>
+</blockquote>
+<p>显然当 $l, r$ 分别取奇偶, 偶奇, 奇奇, 偶偶时存在规律. </p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">signed</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">freopen</span>(<span class="string">&quot;sequence.in&quot;</span>, <span class="string">&quot;r&quot;</span>, stdin);</span><br><span class="line">    <span class="built_in">freopen</span>(<span class="string">&quot;sequence.out&quot;</span>, <span class="string">&quot;w&quot;</span>, stdout);</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> n, q; cin &gt;&gt; n &gt;&gt; q;</span><br><span class="line">    <span class="keyword">while</span>(q --)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">long</span> <span class="type">long</span> <span class="type">int</span> s; cin &gt;&gt; s;</span><br><span class="line">        <span class="type">long</span> <span class="type">long</span> <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> a = s % (n + <span class="number">1</span>), b = s % (n + <span class="number">2</span>);</span><br><span class="line">        <span class="keyword">if</span>(a == <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            ans += <span class="built_in">max</span>(<span class="number">0ll</span>, n / <span class="number">2</span> - (s / (n + <span class="number">1</span>)) + <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(a * <span class="number">2</span> - <span class="number">1</span> &lt;= n)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>((a * <span class="number">2</span> - <span class="number">1</span>) - <span class="number">2</span> * (s / (n + <span class="number">1</span>)) &gt;= <span class="number">1</span>) ans ++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(b == <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            ans += <span class="built_in">max</span>(<span class="number">0ll</span>, (n - <span class="number">1</span>) / <span class="number">2</span> - (s / (n + <span class="number">2</span>)) + <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(b * <span class="number">2</span> - <span class="number">1</span> &gt; n) </span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>((n - b + <span class="number">1</span>) * <span class="number">2</span> - <span class="number">2</span> * (s / (n + <span class="number">2</span>)) &gt;= <span class="number">1</span>) ans ++;</span><br><span class="line">            </span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        cout &lt;&lt; ans &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="T3-函数"><a href="#T3-函数" class="headerlink" title="T3 函数"></a>T3 函数</h1><p>数位dp，待更</p>
+<h1 id="T3-游戏"><a href="#T3-游戏" class="headerlink" title="T3 游戏"></a>T3 游戏</h1><p>nim游戏，待更</p>
+]]></content>
       <tags>
-        <tag>建立博客</tag>
-        <tag>hexo</tag>
-        <tag>next</tag>
+        <tag>题解汇总</tag>
       </tags>
   </entry>
   <entry>
@@ -175,24 +260,6 @@ ans = sigma_{i = 0}^{mn - 1} \frac{(x - dis[i])}{mn} + 1</script><p>加一是因
       </tags>
   </entry>
   <entry>
-    <title>失眠的信</title>
-    <url>/2024/07/25/%E6%9D%82%E5%BF%B5/</url>
-    <content><![CDATA[<p>这会是一个不眠的夜吗？</p>
-<p>望着无光晦暗的天花板，有人彷徨迷茫，有人无助忧伤。</p>
-<p>那就请转头看看窗外吧，看看繁星为谁而闪烁，看看明月为谁而高悬。</p>
-<p>去看看不灭的城市中车流穿梭，编织着无数失眠的梦想；去看看楼房的窗户里灯光常亮，浸染着数不清的纸短情长。</p>
-<p>不要忘记了，在这个世界上还有许多人将会与你遇见，还有许多人正等待着被你遇见。</p>
-<p>城市万家灯火，总有一盏为你而开；世间繁华万千，总有一种为你而来。</p>
-<p>失眠的人啊，</p>
-<p>请安心睡去。</p>
-<p>因为，</p>
-<p>明天就在那里。</p>
-]]></content>
-      <tags>
-        <tag>杂谈</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>最长公共上升子序列(LCIS)</title>
     <url>/2024/07/25/%E6%9C%80%E9%95%BF%E4%B8%8A%E5%8D%87%E5%AD%90%E5%BA%8F%E5%88%97/</url>
     <content><![CDATA[<h2 id="什么是最长公共上升子序列-bushi"><a href="#什么是最长公共上升子序列-bushi" class="headerlink" title="什么是最长公共上升子序列(bushi)"></a>什么是最长公共上升子序列(bushi)</h2><blockquote>
@@ -215,6 +282,24 @@ ans = sigma_{i = 0}^{mn - 1} \frac{(x - dis[i])}{mn} + 1</script><p>加一是因
         <tag>动态规划</tag>
         <tag>最长公共子序列</tag>
         <tag>最长公共上升子序列</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>失眠的信</title>
+    <url>/2024/07/25/%E6%9D%82%E5%BF%B5/</url>
+    <content><![CDATA[<p>这会是一个不眠的夜吗？</p>
+<p>望着无光晦暗的天花板，有人彷徨迷茫，有人无助忧伤。</p>
+<p>那就请转头看看窗外吧，看看繁星为谁而闪烁，看看明月为谁而高悬。</p>
+<p>去看看不灭的城市中车流穿梭，编织着无数失眠的梦想；去看看楼房的窗户里灯光常亮，浸染着数不清的纸短情长。</p>
+<p>不要忘记了，在这个世界上还有许多人将会与你遇见，还有许多人正等待着被你遇见。</p>
+<p>城市万家灯火，总有一盏为你而开；世间繁华万千，总有一种为你而来。</p>
+<p>失眠的人啊，</p>
+<p>请安心睡去。</p>
+<p>因为，</p>
+<p>明天就在那里。</p>
+]]></content>
+      <tags>
+        <tag>杂谈</tag>
       </tags>
   </entry>
 </search>
