@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/aaaa.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/aaaa.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/aaaa.png">
+  <link rel="mask-icon" href="/images/aaaa.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"nuoziy.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"slideDownBigOut"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="线段树的原理、建树、单点&#x2F;区间修改、区间查询的完整写法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="线段树入门到会用：一篇讲清写法">
+<meta property="og:url" content="https://nuoziy.github.io/2026/09/05/%E7%BA%BF%E6%AE%B5%E6%A0%91%E5%85%A5%E9%97%A8%E5%88%B0%E4%BC%9A%E7%94%A8/index.html">
+<meta property="og:site_name" content="Nozie&#39;s Blog">
+<meta property="og:description" content="线段树的原理、建树、单点&#x2F;区间修改、区间查询的完整写法">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-09-04T16:45:00.000Z">
+<meta property="article:modified_time" content="2026-09-04T16:41:21.133Z">
+<meta property="article:author" content="Nozie.">
+<meta property="article:tag" content="线段树">
+<meta property="article:tag" content="数据结构">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://nuoziy.github.io/2026/09/05/%E7%BA%BF%E6%AE%B5%E6%A0%91%E5%85%A5%E9%97%A8%E5%88%B0%E4%BC%9A%E7%94%A8/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://nuoziy.github.io/2026/09/05/%E7%BA%BF%E6%AE%B5%E6%A0%91%E5%85%A5%E9%97%A8%E5%88%B0%E4%BC%9A%E7%94%A8/","path":"2026/09/05/线段树入门到会用/","title":"线段树入门到会用：一篇讲清写法"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>线段树入门到会用：一篇讲清写法 | Nozie's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Nozie's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">不执笔墨，便化丹青</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E7%BA%BF%E6%AE%B5%E6%A0%91"><span class="nav-number">1.</span> <span class="nav-text">为什么需要线段树</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E6%80%9D%E6%83%B3"><span class="nav-number">2.</span> <span class="nav-text">核心思想</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BB%BA%E6%A0%91%EF%BC%9A%E9%80%92%E5%BD%92%E5%88%86%E6%B2%BB"><span class="nav-number">3.</span> <span class="nav-text">建树：递归分治</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%95%E7%82%B9%E4%BF%AE%E6%94%B9"><span class="nav-number">4.</span> <span class="nav-text">单点修改</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8C%BA%E9%97%B4%E6%9F%A5%E8%AF%A2"><span class="nav-number">5.</span> <span class="nav-text">区间查询</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%9B%E9%98%B6%EF%BC%9A%E5%8C%BA%E9%97%B4%E4%BF%AE%E6%94%B9-%E6%87%92%E6%A0%87%E8%AE%B0"><span class="nav-number">6.</span> <span class="nav-text">进阶：区间修改 + 懒标记</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E5%9D%91"><span class="nav-number">7.</span> <span class="nav-text">常见坑</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%E9%A2%98%E5%8D%95"><span class="nav-number">8.</span> <span class="nav-text">练习题单</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Nozie."
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Nozie.</p>
+  <div class="site-description" itemprop="description">If you cannot be the poet, be the poem</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Nuoziy" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Nuoziy" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:Nuoziy@gmail.com" title="E-Mail → mailto:Nuoziy@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/Luoskys" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;Luoskys" rel="noopener me" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://instagram.com/Nuoziy" title="Instagram → https:&#x2F;&#x2F;instagram.com&#x2F;Nuoziy" rel="noopener me" target="_blank"><i class="fab fa-instagram fa-fw"></i>Instagram</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://nuoziy.github.io/2026/09/05/%E7%BA%BF%E6%AE%B5%E6%A0%91%E5%85%A5%E9%97%A8%E5%88%B0%E4%BC%9A%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Nozie.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Nozie's Blog">
+      <meta itemprop="description" content="If you cannot be the poet, be the poem">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="线段树入门到会用：一篇讲清写法 | Nozie's Blog">
+      <meta itemprop="description" content="线段树的原理、建树、单点/区间修改、区间查询的完整写法">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          线段树入门到会用：一篇讲清写法
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-09-05 00:45:00 / 修改时间：00:41:21" itemprop="dateCreated datePublished" datetime="2026-09-05T00:45:00+08:00">2026-09-05</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">线段树的原理、建树、单点/区间修改、区间查询的完整写法</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="为什么需要线段树"><a href="#为什么需要线段树" class="headerlink" title="为什么需要线段树"></a>为什么需要线段树</h1><p>给你一个数组，要求支持两种操作：</p>
+<ol>
+<li>修改某个元素（或者某段区间）</li>
+<li>查询某段区间的和 / 最大值 / 最小值</li>
+</ol>
+<p>朴素做法：修改 $O(1)$，查询 $O(n)$。前缀和做法：查询 $O(1)$，修改 $O(n)$。两种都怕”修改和查询都很多”的场景。</p>
+<p>线段树把两种操作都做到 $O(\log n)$，代价是 $O(n)$ 的空间和 $O(n \log n)$ 的建树时间。</p>
+<h1 id="核心思想"><a href="#核心思想" class="headerlink" title="核心思想"></a>核心思想</h1><p>线段树是一棵二叉树，每个节点负责数组的一段区间 $[l, r]$：</p>
+<ul>
+<li>根节点负责 $[1, n]$</li>
+<li>每个节点把负责的区间<strong>对半分</strong>给两个儿子</li>
+<li>叶子节点负责单个元素 $[i, i]$</li>
+</ul>
+<p>对于节点编号的技巧：如果节点 $p$ 负责一段区间，那么：</p>
+<ul>
+<li>左儿子编号 $2p$，右儿子编号 $2p+1$（位运算写法：<code>p &lt;&lt; 1</code> 和 <code>p &lt;&lt; 1 | 1</code>）</li>
+<li>中点 $mid = \lfloor (l+r)/2 \rfloor$，左儿子管 $[l, mid]$，右儿子管 $[mid+1, r]$</li>
+</ul>
+<p>用 <code>1</code> 号点作根、<code>2p</code> 编号时，开 <code>4n</code> 的数组空间一定够。</p>
+<p>以数组 <code>[1, 3, 5, 7, 9, 11]</code> 为例，区间和线段树长这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">                [1,6] sum=36</span><br><span class="line">               /            \</span><br><span class="line">        [1,3] sum=9       [4,6] sum=27</span><br><span class="line">        /      \           /       \</span><br><span class="line">   [1,2]=4   [3,3]=5   [4,5]=16   [6,6]=11</span><br><span class="line">    /    \              /     \</span><br><span class="line">[1,1]=1 [2,2]=3    [4,4]=7  [5,5]=9</span><br></pre></td></tr></table></figure>
+<h1 id="建树：递归分治"><a href="#建树：递归分治" class="headerlink" title="建树：递归分治"></a>建树：递归分治</h1><p>维护区间和的例子。叶子直接赋值，非叶子节点 = 左儿子 + 右儿子：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">const</span> <span class="type">int</span> N = <span class="number">1e5</span> + <span class="number">5</span>;</span><br><span class="line"><span class="type">long</span> <span class="type">long</span> sum[N &lt;&lt; <span class="number">2</span>];</span><br><span class="line"><span class="type">int</span> a[N];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">pushup</span><span class="params">(<span class="type">int</span> p)</span> </span>&#123;              <span class="comment">// 由儿子更新父亲</span></span><br><span class="line">    sum[p] = sum[p &lt;&lt; <span class="number">1</span>] + sum[p &lt;&lt; <span class="number">1</span> | <span class="number">1</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">build</span><span class="params">(<span class="type">int</span> p, <span class="type">int</span> l, <span class="type">int</span> r)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (l == r) &#123; sum[p] = a[l]; <span class="keyword">return</span>; &#125;  <span class="comment">// 叶子</span></span><br><span class="line">    <span class="type">int</span> mid = (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">    <span class="built_in">build</span>(p &lt;&lt; <span class="number">1</span>, l, mid);</span><br><span class="line">    <span class="built_in">build</span>(p &lt;&lt; <span class="number">1</span> | <span class="number">1</span>, mid + <span class="number">1</span>, r);</span><br><span class="line">    <span class="built_in">pushup</span>(p);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 调用：build(1, 1, n);</span></span><br></pre></td></tr></table></figure>
+<p>三行核心逻辑：<strong>叶子赋值、递归两边、合并上来</strong>。几乎所有线段树操作都是这个骨架。</p>
+<h1 id="单点修改"><a href="#单点修改" class="headerlink" title="单点修改"></a>单点修改</h1><p>从根出发，看目标位置在左半还是右半，一路走到叶子，改完再沿路 pushup：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">update</span><span class="params">(<span class="type">int</span> p, <span class="type">int</span> l, <span class="type">int</span> r, <span class="type">int</span> x, <span class="type">int</span> v)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (l == r) &#123; sum[p] = v; <span class="keyword">return</span>; &#125;     <span class="comment">// 找到叶子</span></span><br><span class="line">    <span class="type">int</span> mid = (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span> (x &lt;= mid) <span class="built_in">update</span>(p &lt;&lt; <span class="number">1</span>, l, mid, x, v);</span><br><span class="line">    <span class="keyword">else</span>          <span class="built_in">update</span>(p &lt;&lt; <span class="number">1</span> | <span class="number">1</span>, mid + <span class="number">1</span>, r, x, v);</span><br><span class="line">    <span class="built_in">pushup</span>(p);                              <span class="comment">// 回溯时更新祖先</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>复杂度：树高 $O(\log n)$，每层只走一个儿子。</p>
+<h1 id="区间查询"><a href="#区间查询" class="headerlink" title="区间查询"></a>区间查询</h1><p>查询 $[ql, qr]$ 的和，从根出发，三种情况：</p>
+<ul>
+<li>当前区间与查询区间<strong>无交集</strong>：返回 0（对 sum 来说的”单位元”）</li>
+<li>当前区间<strong>完全被包含</strong>在查询区间内：直接返回 <code>sum[p]</code>，不再往下</li>
+<li><strong>部分相交</strong>：拆成左右儿子各查一半，加起来</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">long</span> <span class="type">long</span> <span class="title">query</span><span class="params">(<span class="type">int</span> p, <span class="type">int</span> l, <span class="type">int</span> r, <span class="type">int</span> ql, <span class="type">int</span> qr)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (qr &lt; l || r &lt; ql) <span class="keyword">return</span> <span class="number">0</span>;         <span class="comment">// 无交集</span></span><br><span class="line">    <span class="keyword">if</span> (ql &lt;= l &amp;&amp; r &lt;= qr) <span class="keyword">return</span> sum[p];  <span class="comment">// 完全包含</span></span><br><span class="line">    <span class="type">int</span> mid = (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">query</span>(p &lt;&lt; <span class="number">1</span>, l, mid, ql, qr)</span><br><span class="line">         + <span class="built_in">query</span>(p &lt;&lt; <span class="number">1</span> | <span class="number">1</span>, mid + <span class="number">1</span>, r, ql, qr);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>每层最多访问 4 个节点，所以复杂度也是 $O(\log n)$。</p>
+<p>到这里，<strong>单点修改 + 区间查询</strong>的线段树已经完整了。洛谷 P3374（单点修改区间和）可以直接过。</p>
+<h1 id="进阶：区间修改-懒标记"><a href="#进阶：区间修改-懒标记" class="headerlink" title="进阶：区间修改 + 懒标记"></a>进阶：区间修改 + 懒标记</h1><p>如果要把 $[ql, qr]$ 整段加 $v$，逐个单点修改是 $O(n \log n)$，等于白学。解决办法是<strong>懒标记（lazy tag）</strong>。</p>
+<p>核心想法：修改整个区间时，先在能”完全覆盖”的节点上<strong>记账</strong>（打标记），告诉它”你管的所有数都加过 v 了”，但<strong>不下传给儿子</strong>——等以后真的需要访问儿子时再传。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">long</span> <span class="type">long</span> sum[N &lt;&lt; <span class="number">2</span>], tag[N &lt;&lt; <span class="number">2</span>];   <span class="comment">// tag: 该节点整段尚未下传的加法标记</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">pushdown</span><span class="params">(<span class="type">int</span> p, <span class="type">int</span> l, <span class="type">int</span> r)</span> </span>&#123;  <span class="comment">// 把标记传给两个儿子</span></span><br><span class="line">    <span class="keyword">if</span> (!tag[p]) <span class="keyword">return</span>;</span><br><span class="line">    <span class="type">int</span> mid = (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">    <span class="type">int</span> ls = p &lt;&lt; <span class="number">1</span>, rs = p &lt;&lt; <span class="number">1</span> | <span class="number">1</span>;</span><br><span class="line">    tag[ls] += tag[p];</span><br><span class="line">    sum[ls] += tag[p] * (mid - l + <span class="number">1</span>);        <span class="comment">// 左儿子区间长度</span></span><br><span class="line">    tag[rs] += tag[p];</span><br><span class="line">    sum[rs] += tag[p] * (r - mid);</span><br><span class="line">    tag[p] = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">update</span><span class="params">(<span class="type">int</span> p, <span class="type">int</span> l, <span class="type">int</span> r, <span class="type">int</span> ql, <span class="type">int</span> qr, <span class="type">long</span> <span class="type">long</span> v)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (qr &lt; l || r &lt; ql) <span class="keyword">return</span>;</span><br><span class="line">    <span class="keyword">if</span> (ql &lt;= l &amp;&amp; r &lt;= qr) &#123;          <span class="comment">// 完全覆盖：记账即走</span></span><br><span class="line">        sum[p] += v * (r - l + <span class="number">1</span>);</span><br><span class="line">        tag[p] += v;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">pushdown</span>(p, l, r);                 <span class="comment">// 要访问儿子了，先还账</span></span><br><span class="line">    <span class="type">int</span> mid = (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">    <span class="built_in">update</span>(p &lt;&lt; <span class="number">1</span>, l, mid, ql, qr, v);</span><br><span class="line">    <span class="built_in">update</span>(p &lt;&lt; <span class="number">1</span> | <span class="number">1</span>, mid + <span class="number">1</span>, r, ql, qr, v);</span><br><span class="line">    <span class="built_in">pushup</span>(p);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">long</span> <span class="type">long</span> <span class="title">query</span><span class="params">(<span class="type">int</span> p, <span class="type">int</span> l, <span class="type">int</span> r, <span class="type">int</span> ql, <span class="type">int</span> qr)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (qr &lt; l || r &lt; ql) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (ql &lt;= l &amp;&amp; r &lt;= qr) <span class="keyword">return</span> sum[p];</span><br><span class="line">    <span class="built_in">pushdown</span>(p, l, r);                 <span class="comment">// 同样要先还账</span></span><br><span class="line">    <span class="type">int</span> mid = (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">query</span>(p &lt;&lt; <span class="number">1</span>, l, mid, ql, qr)</span><br><span class="line">         + <span class="built_in">query</span>(p &lt;&lt; <span class="number">1</span> | <span class="number">1</span>, mid + <span class="number">1</span>, r, ql, qr);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>口诀记一下：<strong>下放前必 pushdown，回溯时必 pushup</strong>。这两句忘了任何一句，答案就玄学出错。</p>
+<p>洛谷 P3372（区间加区间和）是这道题的模板题。</p>
+<h1 id="常见坑"><a href="#常见坑" class="headerlink" title="常见坑"></a>常见坑</h1><ol>
+<li><strong>空间开小</strong>：<code>2p</code> 编号要开 <code>4n</code>，不是 <code>2n</code>。RE 的一大来源。</li>
+<li><strong>取模忘乘</strong>：区间长度 <code>(r - l + 1)</code> 别忘了乘，特别是带取模的时候。</li>
+<li><strong>query 边界</strong>：<code>ql &lt;= l &amp;&amp; r &lt;= qr</code> 和 <code>qr &lt; l || r &lt; ql</code> 这两行写反或写漏，样例可能碰巧过，大数据直接挂。</li>
+<li><strong>懒标记种类</strong>：加法标记可以直接累加；如果同时有”区间赋值”和”区间加”，要规定好先后顺序（一般是赋值覆盖加法）。</li>
+<li><strong>长整型</strong>：区间和 <code>int</code> 很容易溢出，无脑 <code>long long</code>。</li>
+</ol>
+<h1 id="练习题单"><a href="#练习题单" class="headerlink" title="练习题单"></a>练习题单</h1><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>题目</th>
+<th>考点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>洛谷 P3374</td>
+<td>单点修改 + 区间和</td>
+</tr>
+<tr>
+<td>洛谷 P3372</td>
+<td>区间加 + 区间和（懒标记入门）</td>
+</tr>
+<tr>
+<td>洛谷 P1531</td>
+<td>单点修改 + 区间最大值</td>
+</tr>
+<tr>
+<td>洛谷 P1198</td>
+<td>单点插入 + 区间最大值</td>
+</tr>
+<tr>
+<td>洛谷 P1531</td>
+<td>动态开点 / 离散化前热身</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>学会上面的模板之后，下一步可以看：权值线段树（配合离散化）、zkw 线段树（非递归写法，常数小）、线段树合并与分裂、李超线段树。那些都是这篇骨架上的变形——骨架熟了，后面的都不难。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%BA%BF%E6%AE%B5%E6%A0%91/" rel="tag"># 线段树</a>
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag"># 数据结构</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/09/03/%E6%9D%82%E5%BF%B5/" rel="prev" title="失眠的信">
+                  <i class="fa fa-angle-left"></i> 失眠的信
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Nozie.</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
+<!-- 页面点击小红心 --> <script type="text/javascript" src="/js/clicklove.js"></script>
+<a target="_blank" rel="noopener" href="https://github.com/Nuoziy" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
