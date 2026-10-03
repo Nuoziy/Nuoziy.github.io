@@ -24,6 +24,43 @@
   --highlight-gutter-foreground: #555;
   color-scheme: light;
 }
+@media (prefers-color-scheme: dark) {
+  :root {
+    --body-bg-color: #282828;
+    --content-bg-color: #333;
+    --card-bg-color: #555;
+    --text-color: #ccc;
+    --blockquote-color: #bbb;
+    --link-color: #ccc;
+    --link-hover-color: #eee;
+    --brand-color: #ddd;
+    --brand-hover-color: #ddd;
+    --table-row-odd-bg-color: #282828;
+    --table-row-hover-bg-color: #363636;
+    --menu-item-bg-color: #555;
+    --theme-color: #222;
+    --btn-default-bg: #222;
+    --btn-default-color: #ccc;
+    --btn-default-border-color: #555;
+    --btn-default-hover-bg: #666;
+    --btn-default-hover-color: #ccc;
+    --btn-default-hover-border-color: #666;
+    --highlight-background: #011627;
+    --highlight-foreground: #d6deeb;
+    --highlight-gutter-background: #162a3a;
+    --highlight-gutter-foreground: #c0cad7;
+    color-scheme: dark;
+  }
+  img {
+    opacity: 0.75;
+  }
+  img:hover {
+    opacity: 0.9;
+  }
+  iframe {
+    color-scheme: light;
+  }
+}
 html {
   line-height: 1.15; /* 1 */
   -webkit-text-size-adjust: 100%; /* 2 */
@@ -482,6 +519,182 @@ code.hljs {
 }
 .hljs-strong {
   font-weight: bold
+}
+@media (prefers-color-scheme: dark) {
+pre code.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 1em
+}
+code.hljs {
+  padding: 3px 5px
+}
+/*
+
+Night Owl for highlight.js (c) Carl Baxter <carl@cbax.tech>
+
+An adaptation of Sarah Drasner's Night Owl VS Code Theme
+https://github.com/sdras/night-owl-vscode-theme
+
+Copyright (c) 2018 Sarah Drasner
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+*/
+.hljs {
+  background: #011627;
+  color: #d6deeb
+}
+/* General Purpose */
+.hljs-keyword {
+  color: #c792ea;
+  font-style: italic
+}
+.hljs-built_in {
+  color: #addb67;
+  font-style: italic
+}
+.hljs-type {
+  color: #82aaff
+}
+.hljs-literal {
+  color: #ff5874
+}
+.hljs-number {
+  color: #F78C6C
+}
+.hljs-regexp {
+  color: #5ca7e4
+}
+.hljs-string {
+  color: #ecc48d
+}
+.hljs-subst {
+  color: #d3423e
+}
+.hljs-symbol {
+  color: #82aaff
+}
+.hljs-class {
+  color: #ffcb8b
+}
+.hljs-function {
+  color: #82AAFF
+}
+.hljs-title {
+  color: #DCDCAA;
+  font-style: italic
+}
+.hljs-params {
+  color: #7fdbca
+}
+/* Meta */
+.hljs-comment {
+  color: #637777;
+  font-style: italic
+}
+.hljs-doctag {
+  color: #7fdbca
+}
+.hljs-meta {
+  color: #82aaff
+}
+.hljs-meta .hljs-keyword {
+  color: #82aaff
+}
+.hljs-meta .hljs-string {
+  color: #ecc48d
+}
+/* Tags, attributes, config */
+.hljs-section {
+  color: #82b1ff
+}
+.hljs-tag,
+.hljs-name {
+  color: #7fdbca
+}
+.hljs-attr {
+  color: #7fdbca
+}
+.hljs-attribute {
+  color: #80cbc4
+}
+.hljs-variable {
+  color: #addb67
+}
+/* Markup */
+.hljs-bullet {
+  color: #d9f5dd
+}
+.hljs-code {
+  color: #80CBC4
+}
+.hljs-emphasis {
+  color: #c792ea;
+  font-style: italic
+}
+.hljs-strong {
+  color: #addb67;
+  font-weight: bold
+}
+.hljs-formula {
+  color: #c792ea
+}
+.hljs-link {
+  color: #ff869a
+}
+.hljs-quote {
+  color: #697098;
+  font-style: italic
+}
+/* CSS */
+.hljs-selector-tag {
+  color: #ff6363
+}
+.hljs-selector-id {
+  color: #fad430
+}
+.hljs-selector-class {
+  color: #addb67;
+  font-style: italic
+}
+.hljs-selector-attr,
+.hljs-selector-pseudo {
+  color: #c792ea;
+  font-style: italic
+}
+/* Templates */
+.hljs-template-tag {
+  color: #c792ea
+}
+.hljs-template-variable {
+  color: #addb67
+}
+/* diff */
+.hljs-addition {
+  color: #addb67ff;
+  font-style: italic
+}
+.hljs-deletion {
+  color: #EF535090;
+  font-style: italic
+}
 }
 .highlight:hover .copy-btn,
 .code-container:hover .copy-btn {
@@ -1234,6 +1447,35 @@ pre code {
 .use-motion .menu-item {
   visibility: hidden;
 }
+.book-mark-link {
+  border-bottom: 0;
+  position: fixed;
+  top: -10px;
+  transition: top 0.3s;
+  right: 30px;
+}
+@media (max-width: 991px) {
+  .book-mark-link {
+    right: 20px;
+  }
+}
+@media (max-width: 991px) {
+  .book-mark-link {
+    display: none;
+  }
+}
+.book-mark-link::before {
+  color: #222;
+  font-size: 32px;
+  line-height: 1;
+  content: '\f02e';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+}
+.book-mark-link:hover,
+.book-mark-link-fixed {
+  top: -2px;
+}
 @media (max-width: 991px) {
   .sidebar {
     left: -320px;
@@ -1273,7 +1515,7 @@ pre code {
     vertical-align: middle;
   }
   .links-of-author a::before {
-    background: #d73c70;
+    background: #d1e94b;
     display: inline-block;
     margin-right: 3px;
     transform: translateY(-2px);
@@ -1742,7 +1984,7 @@ pre code {
 }
 .reading-progress-bar {
   --progress: 0;
-  background: #37c6c0;
+  background: #6cf;
   height: 3px;
   position: fixed;
   z-index: 50;
@@ -2422,6 +2664,52 @@ ul.breadcrumb li:last-child {
   border-bottom-color: #111;
   color: #111;
 }
+@media (prefers-color-scheme: dark) {
+  .tag-cloud-0 {
+    border-bottom-color: #555;
+    color: #555;
+  }
+  .tag-cloud-1 {
+    border-bottom-color: #646464;
+    color: #646464;
+  }
+  .tag-cloud-2 {
+    border-bottom-color: #737373;
+    color: #737373;
+  }
+  .tag-cloud-3 {
+    border-bottom-color: #828282;
+    color: #828282;
+  }
+  .tag-cloud-4 {
+    border-bottom-color: #929292;
+    color: #929292;
+  }
+  .tag-cloud-5 {
+    border-bottom-color: #a1a1a1;
+    color: #a1a1a1;
+  }
+  .tag-cloud-6 {
+    border-bottom-color: #b0b0b0;
+    color: #b0b0b0;
+  }
+  .tag-cloud-7 {
+    border-bottom-color: #c0c0c0;
+    color: #c0c0c0;
+  }
+  .tag-cloud-8 {
+    border-bottom-color: #cfcfcf;
+    color: #cfcfcf;
+  }
+  .tag-cloud-9 {
+    border-bottom-color: #dedede;
+    color: #dedede;
+  }
+  .tag-cloud-10 {
+    border-bottom-color: #eee;
+    color: #eee;
+  }
+}
 .search-active {
   overflow: hidden;
 }
@@ -2479,6 +2767,11 @@ ul.breadcrumb li:last-child {
   display: flex;
   padding: 5px;
 }
+@media (prefers-color-scheme: dark) {
+  .search-popup .search-header {
+    background: #666;
+  }
+}
 .search-popup input.search-input {
   background: transparent;
   border: 0;
@@ -2526,13 +2819,6 @@ mark.search-keyword {
   border-bottom: 1px dashed #ff2a2a;
   color: #ff2a2a;
   font-weight: bold;
-}
-mjx-container[jax='CHTML'][display='true'],
-.has-jax {
-  overflow: auto hidden;
-}
-mjx-container[display='true'] + br {
-  display: none;
 }
 .use-motion .animated {
   animation-fill-mode: none;
@@ -2918,4 +3204,80 @@ body {
 .main-inner {
   background-color: rgba(255,255,255,0);
   padding: 0px 40px 40px 40px;
+}
+/* ══════════════════════════════════════════════════════════
+   音乐播放器 —— 放在侧边栏「身份卡片」下面
+   侧边栏 320px，跟主题卡片一样圆角 30px
+   ══════════════════════════════════════════════════════════ */
+#tianyi-player {
+  margin: 12px auto 0;
+  width: 100%;
+  max-width: 300px /* 卡片本身有左右留白，稍微收一点 */;
+}
+/* 播放器主体：做成一张卡片的样子 */
+#tianyi-player .aplayer {
+  width: 100% !important;
+  margin: 0 !important;
+  border-radius: 20px !important /* ★ 四角都圆 */;
+  overflow: hidden !important /* ★ 必须加：APlayer 自己写的是 visible ✗ */;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  background: #fff;
+}
+/* 专辑封面：左上、左下都圆（它在最左边） */
+#tianyi-player .aplayer-pic {
+  border-radius: 20px 0 0 20px;
+}
+/* 右侧信息区：右上圆 */
+#tianyi-player .aplayer-info {
+  border-radius: 0 20px 0 0;
+}
+/* 底部控制条也不能探出去 */
+#tianyi-player .aplayer-info .aplayer-controller {
+  border-radius: 0 0 20px 0;
+}
+/* 歌单也跟着圆 */
+#tianyi-player .aplayer-list {
+  border-radius: 0 0 20px 20px;
+  border-top: 1px solid rgba(0,0,0,0.05);
+  max-height: 180px;
+}
+#tianyi-player .aplayer-list ol li {
+  font-size: 13px;
+}
+#tianyi-player .aplayer-list ol li:last-child {
+  border-radius: 0 0 20px 20px;
+}
+/* 信息区圆角呼应 */
+#tianyi-player .aplayer-info {
+  border-radius: 0 20px 0 0;
+}
+/* 歌名 */
+#tianyi-player .aplayer-info .aplayer-music .aplayer-title {
+  font-weight: 600;
+  font-size: 13px;
+}
+/* 主题色 */
+#tianyi-player .aplayer-bar-wrap .aplayer-bar .aplayer-played {
+  background: #6cf !important;
+}
+#tianyi-player .aplayer-bar-wrap .aplayer-bar .aplayer-played .aplayer-thumb {
+  background: #6cf !important;
+}
+#tianyi-player .aplayer-info .aplayer-controller .aplayer-time .aplayer-icon:hover path {
+  fill: #6cf;
+}
+/* ── 暗色模式 ── */
+[data-theme="dark"] #tianyi-player .aplayer {
+  background: #222;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.35);
+}
+[data-theme="dark"] #tianyi-player .aplayer-list {
+  background: #222;
+  border-color: rgba(255,255,255,0.08);
+}
+/* ── 手机上侧边栏是抽屉，宽度自适应 ── */
+@media (max-width: 767px) {
+  #tianyi-player {
+    max-width: 100%;
+  }
 }
