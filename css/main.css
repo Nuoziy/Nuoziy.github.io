@@ -1515,7 +1515,7 @@ pre code {
     vertical-align: middle;
   }
   .links-of-author a::before {
-    background: #932bcf;
+    background: #cbff9c;
     display: inline-block;
     margin-right: 3px;
     transform: translateY(-2px);
@@ -3151,7 +3151,7 @@ header.header {
   }
 }
 body {
-  background: url("/images/background.png");
+  background: url("/images/background.webp");
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: 50% 50%;
@@ -3605,4 +3605,490 @@ figure.highlight .gutter {
 .footer .author {
   font-family: 'Dancing Script', 'Segoe Script', cursive;
   font-weight: 500;
+}
+/* ══════════════════════════════════════════════════════════
+   ⑧ 入站封面 ·「潮汐」
+   ──────────────────────────────────────────────────────────
+   · 结构：source/_data/body-end.njk（星空 / 海浪两层 canvas + 文字）
+   · 动画：source/js/entry-cover.js
+   · 开关：_config.hexo-theme-next-master.yml 的 ⑮ entry_cover
+   · 想再看一次：网址后面加 ?cover=1
+   ══════════════════════════════════════════════════════════ */
+:root {
+  --ec-sky-1: #04101f;
+  --ec-sky-2: #0a2138;
+  --ec-sky-3: #123c5c;
+  --ec-sky-4: #081c2e;
+  --ec-glow-warm: rgba(255,184,122,0.2);
+  --ec-glow-cool: rgba(102,204,255,0.14);
+  --ec-text: #eaf6ff;
+  --ec-dim: rgba(234,246,255,0.52);
+  --ec-vignette: rgba(2,8,16,0.48);
+/* 海水：远处那层很淡（接近天光），近处那层很深 —— 中间自动插值 */
+  --ec-water-far: 46, 98, 138;
+  --ec-water-near: 12, 38, 64;
+  --ec-haze: 17, 55, 86;
+  --ec-foam: 234, 248, 255;
+  --ec-star: 223, 241, 255;
+  --ec-star-alpha: 1;
+  --ec-title-grad: linear-gradient(96deg, #d8f2ff 0%, #6cf 30%, #9ad3ff 52%, #c9e6ff 74%, #d8f2ff 100%);
+  --ec-title-glow: rgba(102,204,255,0.4);
+  --ec-btn-bg: rgba(255,255,255,0.055);
+  --ec-btn-border: rgba(102,204,255,0.52);
+  --ec-btn-text: #e8f7ff;
+  --ec-shadow: rgba(2,10,20,0.55);
+  --ec-text-shadow: rgba(4,16,30,0.75);
+}
+/* ── 亮色（白天模式）：淡蓝晨光 ── */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --ec-sky-1: #e9f4fd;
+    --ec-sky-2: #d3e8fa;
+    --ec-sky-3: #a8d3f0;
+    --ec-sky-4: #cfe7f7;
+    --ec-glow-warm: rgba(255,204,148,0.55);
+    --ec-glow-cool: rgba(255,255,255,0.38);
+    --ec-text: #10374f;
+    --ec-dim: rgba(16,55,79,0.55);
+    --ec-vignette: rgba(120,165,195,0.16);
+    --ec-water-far: 158, 202, 232;
+    --ec-water-near: 34, 98, 150;
+    --ec-haze: 226, 241, 252;
+    --ec-foam: 255, 255, 255;
+    --ec-star: 255, 255, 255;
+    --ec-star-alpha: 0.28;
+    --ec-title-grad: linear-gradient(96deg, #2f8fd0 0%, #1c6fa8 32%, #3e9fd8 56%, #26759f 78%, #2f8fd0 100%);
+    --ec-title-glow: rgba(47,143,208,0.28);
+    --ec-btn-bg: rgba(255,255,255,0.5);
+    --ec-btn-border: rgba(47,143,208,0.45);
+    --ec-btn-text: #0f3a5c;
+    --ec-shadow: rgba(60,110,150,0.22);
+    --ec-text-shadow: rgba(255,255,255,0.8);
+  }
+}
+:root[data-theme="light"] {
+  --ec-sky-1: #e9f4fd;
+  --ec-sky-2: #d3e8fa;
+  --ec-sky-3: #a8d3f0;
+  --ec-sky-4: #cfe7f7;
+  --ec-glow-warm: rgba(255,204,148,0.55);
+  --ec-glow-cool: rgba(255,255,255,0.38);
+  --ec-text: #10374f;
+  --ec-dim: rgba(16,55,79,0.55);
+  --ec-vignette: rgba(120,165,195,0.16);
+  --ec-water-far: 158, 202, 232;
+  --ec-water-near: 34, 98, 150;
+  --ec-haze: 226, 241, 252;
+  --ec-foam: 255, 255, 255;
+  --ec-star: 255, 255, 255;
+  --ec-star-alpha: 0.28;
+  --ec-title-grad: linear-gradient(96deg, #2f8fd0 0%, #1c6fa8 32%, #3e9fd8 56%, #26759f 78%, #2f8fd0 100%);
+  --ec-title-glow: rgba(47,143,208,0.28);
+  --ec-btn-bg: rgba(255,255,255,0.5);
+  --ec-btn-border: rgba(47,143,208,0.45);
+  --ec-btn-text: #0f3a5c;
+  --ec-shadow: rgba(60,110,150,0.22);
+  --ec-text-shadow: rgba(255,255,255,0.8);
+}
+/* ── 首帧防闪：head.njk 会先给 <html> 打上 ec-pending ──
+   没打上（禁了 JS / 脚本挂掉）封面就永不显示，页面照常可读 */
+html.ec-pending:not(.ec-ready) body {
+  opacity: 0 !important;
+}
+html.ec-pending {
+  background-color: #04101f;
+}
+@media (prefers-color-scheme: light) {
+  html.ec-pending:not([data-theme="dark"]) {
+    background-color: #f2f8fd;
+  }
+}
+html.ec-pending[data-theme="light"] {
+  background-color: #f2f8fd;
+}
+/* 封面期间不许滚动 */
+html.ec-lock,
+html.ec-lock body {
+  overflow: hidden !important;
+  height: 100%;
+  overscroll-behavior: none;
+}
+/* ── 封面本体 ── */
+#entry-cover {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none; /* 只有 head.njk 打了 ec-pending 才登场 */
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  background: radial-gradient(85% 52% at 50% 101%, var(--ec-glow-warm), transparent 68%), radial-gradient(120% 80% at 50% -20%, var(--ec-glow-cool), transparent 62%), linear-gradient(180deg, var(--ec-sky-1) 0%, var(--ec-sky-2) 38%, var(--ec-sky-3) 70%, var(--ec-sky-4) 100%);
+  animation: ec-fade 0.9s ease;
+  transition: opacity 0.5s ease;
+  will-change: opacity;
+}
+html.ec-pending #entry-cover {
+  display: flex;
+}
+#entry-cover.is-leaving {
+  pointer-events: none;
+}
+/* 潮水涨满以后，整块再淡出 —— 顺序对了，才有「沉下去」的感觉 */
+#entry-cover.is-fading {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.ec-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+#ec-stars {
+  z-index: 1;
+}
+#ec-waves {
+  z-index: 3;
+}
+/* 地平线上那一点余温：日落刚过，暖色还在天边 —— 衔接视频壁纸的暖调 */
+.ec-horizon {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  z-index: 1;
+  width: 120vmax;
+  height: 60vmax;
+  transform: translate(-50%, 34%);
+  pointer-events: none;
+  background: radial-gradient(closest-side, var(--ec-glow-warm), transparent 68%);
+  filter: blur(30px);
+  opacity: 0.8;
+}
+/* 四周轻轻压暗，保证字够清楚（别压出灰雾） */
+.ec-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background: radial-gradient(135% 90% at 50% 38%, transparent 52%, var(--ec-vignette) 100%), linear-gradient(180deg, var(--ec-vignette) 0%, transparent 16%);
+  opacity: 0.72;
+}
+/* ── 文字 ── */
+.ec-content {
+/* 只占「天空」那一段高度（--ec-horizon 由脚本按屏幕比例写进来），
+     文字永远落在海平线以上，不会压到浪 */
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 5;
+  height: calc(var(--ec-horizon, 0.59) * 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5vh 22px 0;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(16px);
+  animation: ec-rise 1.15s cubic-bezier(0.2, 0.75, 0.25, 1) 0.18s forwards;
+}
+.is-leaving .ec-content {
+  animation: ec-out 0.62s cubic-bezier(0.4, 0, 0.7, 0.3) forwards;
+}
+/* 标题上方的一道细线 + 小菱形 */
+.ec-mark {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.ec-mark::before,
+.ec-mark::after {
+  content: '';
+  width: 48px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(190,230,255,0.55));
+}
+.ec-mark::after {
+  transform: scaleX(-1);
+}
+.ec-mark i {
+  display: block;
+  width: 5px;
+  height: 5px;
+  background: #bfe9ff;
+  transform: rotate(45deg);
+  box-shadow: 0 0 10px 1px rgba(102,204,255,0.85);
+  animation: ec-blink 4.2s ease-in-out infinite;
+}
+/* 站名：与导航栏同款手写体 + 天依蓝渐变 */
+.ec-title {
+  margin: 0;
+  font-family: 'Dancing Script', 'Segoe Script', cursive;
+  font-weight: 600;
+  font-size: clamp(2.7rem, 7.8vw, 5.8rem);
+  line-height: 1.06;
+  letter-spacing: 0.01em;
+  background: var(--ec-title-grad);
+  background-size: 230% 100%;
+  background-position: 0% 50%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 10px 44px var(--ec-title-glow));
+  animation: ec-sheen 14s linear infinite;
+}
+/* 副标题：不执笔墨，便化丹青 */
+.ec-sub {
+  margin: 20px 0 0;
+  font-family: 'Noto Serif CJK SC', 'Source Han Serif SC', 'Songti SC', 'STSong', 'SimSun', serif;
+  font-weight: 300;
+  font-size: clamp(1rem, 2vw, 1.38rem);
+  letter-spacing: 0.42em;
+  text-indent: 0.42em;
+  color: var(--ec-text);
+  opacity: 0.92;
+  text-shadow: 0 2px 22px var(--ec-text-shadow);
+}
+/* 英文那句：If you cannot be the poet, be the poem */
+.ec-poem {
+  margin: 15px 0 0;
+  font-family: 'Noto Serif CJK SC', Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-size: clamp(0.6rem, 1vw, 0.72rem);
+  letter-spacing: 0.27em;
+  text-indent: 0.27em;
+  text-transform: uppercase;
+  color: var(--ec-dim);
+}
+/* ── 进入按钮 ── */
+.ec-enter {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 44px;
+  padding: 13px 34px 13px 38px;
+  border: 1px solid var(--ec-btn-border);
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--ec-btn-bg);
+  -webkit-backdrop-filter: blur(10px) saturate(150%);
+  backdrop-filter: blur(10px) saturate(150%);
+  color: var(--ec-btn-text);
+  font: inherit;
+  font-size: 0.84rem;
+  letter-spacing: 0.34em;
+  text-indent: 0.34em;
+  cursor: pointer;
+  box-shadow: 0 12px 36px var(--ec-shadow), inset 0 1px 0 rgba(255,255,255,0.16);
+  transition: transform 0.38s cubic-bezier(0.2, 0.8, 0.3, 1), border-color 0.38s ease, box-shadow 0.38s ease, background 0.38s ease;
+  animation: ec-breathe 4.4s ease-in-out infinite;
+}
+/* 悬停时漫上来的一层水光 */
+.ec-enter::before {
+  content: '';
+  position: absolute;
+  inset: -60% -25%;
+  background: radial-gradient(closest-side, rgba(102,204,255,0.55), transparent 72%);
+  opacity: 0;
+  transform: scale(0.45);
+  transition: opacity 0.55s ease, transform 0.8s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+.ec-enter > span,
+.ec-enter .ec-arrow {
+  position: relative;
+  z-index: 1;
+}
+.ec-arrow {
+  width: 15px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.8;
+  transition: transform 0.38s cubic-bezier(0.2, 0.8, 0.3, 1), opacity 0.38s ease;
+}
+.ec-arrow::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: -3.5px;
+  width: 7px;
+  height: 7px;
+  border-top: 1px solid currentColor;
+  border-right: 1px solid currentColor;
+  transform: rotate(45deg);
+}
+.ec-enter:hover,
+.ec-enter:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(170,228,255,0.9);
+  outline: none;
+  animation: none;
+  box-shadow: 0 0 0 1px rgba(102,204,255,0.22), 0 16px 46px rgba(102,204,255,0.28), inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.ec-enter:hover::before,
+.ec-enter:focus-visible::before {
+  opacity: 0.6;
+  transform: scale(1.35);
+}
+.ec-enter:hover .ec-arrow,
+.ec-enter:focus-visible .ec-arrow {
+  transform: translateX(4px);
+  opacity: 1;
+}
+/* 按钮下方的小字提示 */
+.ec-hint {
+  margin: 20px 0 0;
+  font-size: 0.62rem;
+  letter-spacing: 0.24em;
+  text-indent: 0.24em;
+  color: var(--ec-dim);
+}
+/* 点击处的水纹 */
+.ec-ripple {
+  position: absolute;
+  z-index: 6;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  border: 1px solid rgba(170,228,255,0.75);
+  pointer-events: none;
+  animation: ec-ripple 0.85s cubic-bezier(0.2, 0.6, 0.3, 1) forwards;
+}
+/* ── 关键帧 ── */
+/* ── 手机 ── */
+@media (max-width: 767px) {
+  .ec-title {
+    font-size: clamp(2.2rem, 12.5vw, 3.5rem);
+  }
+  .ec-sub {
+    font-size: 0.96rem;
+    letter-spacing: 0.26em;
+    text-indent: 0.26em;
+  }
+  .ec-poem {
+    font-size: 0.56rem;
+    letter-spacing: 0.16em;
+    text-indent: 0.16em;
+  }
+  .ec-content {
+    padding: 3vh 18px 0;
+  }
+  .ec-enter {
+    margin-top: 34px;
+    padding: 12px 28px 12px 32px;
+  }
+  .ec-hint {
+    margin-top: 16px;
+  }
+  .ec-mark {
+    margin-bottom: 18px;
+  }
+  .ec-mark::before,
+  .ec-mark::after {
+    width: 34px;
+  }
+}
+/* 横屏 / 矮屏：把说明收起来，别挤 */
+@media (max-height: 560px) {
+  .ec-content {
+    padding: 0 22px;
+  }
+  .ec-poem,
+  .ec-hint {
+    display: none;
+  }
+  .ec-sub {
+    margin-top: 12px;
+  }
+  .ec-enter {
+    margin-top: 22px;
+  }
+  .ec-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+  }
+}
+/* ── 尊重「减少动态效果」 ── */
+@media (prefers-reduced-motion: reduce) {
+  #entry-cover,
+  .ec-content,
+  .ec-title,
+  .ec-mark i,
+  .ec-enter,
+  .ec-ripple {
+    animation: none !important;
+  }
+  .ec-content {
+    opacity: 1;
+    transform: none;
+  }
+  #entry-cover {
+    transition: opacity 0.3s ease;
+  }
+}
+@keyframes ec-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes ec-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes ec-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-18px);
+    filter: blur(5px);
+  }
+}
+@keyframes ec-sheen {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 230% 50%;
+  }
+}
+@keyframes ec-blink {
+  0%, 100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes ec-breathe {
+  0%, 100% {
+    box-shadow: 0 12px 36px var(--ec-shadow), inset 0 1px 0 rgba(255,255,255,0.16), 0 0 0 0 rgba(102,204,255,0);
+  }
+  50% {
+    box-shadow: 0 12px 36px var(--ec-shadow), inset 0 1px 0 rgba(255,255,255,0.16), 0 0 26px 2px rgba(102,204,255,0.26);
+  }
+}
+@keyframes ec-ripple {
+  to {
+    transform: scale(15);
+    opacity: 0;
+  }
 }

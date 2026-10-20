@@ -51,6 +51,32 @@
 
 <link rel="stylesheet" href="/dist/APlayer.min.css">
 
+
+
+<script>
+(function () {
+  var html = document.documentElement;
+  var q = location.search;
+  if (/[?&]cover=0/.test(q)) return;                 // ?cover=0 强制关掉
+  var force = /[?&]cover=1/.test(q);                 // ?cover=1 强制看一次
+  var root = '/';
+  
+  if (!force && location.pathname.replace(/index\.html$/, '') !== root) return;
+  
+  
+  if (!force) {
+    try { if (sessionStorage.getItem('ec-seen') === '1') return; } catch (e) {}
+  }
+  
+  html.classList.add('ec-pending');
+  // 兜底：脚本没跑起来 / 加载失败，3.5 秒后把页面还回来
+  setTimeout(function () {
+    if (!window.__ecInited) html.classList.remove('ec-pending');
+  }, 3500);
+})();
+</script>
+
+
   <noscript>
     <link rel="stylesheet" href="/css/noscript.css">
   </noscript>
@@ -270,15 +296,9 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：2026-09-05 00:45:00" itemprop="dateCreated datePublished" datetime="2026-09-05T00:45:00+00:00">2026-09-05</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-09-04 16:41:21" itemprop="dateModified" datetime="2026-09-04T16:41:21+00:00">2026-09-04</time>
+      <time title="创建时间：2026-09-05 00:45:00 / 修改时间：01:41:21" itemprop="dateCreated datePublished" datetime="2026-09-05T00:45:00+09:00">2026-09-05</time>
     </span>
 
   
@@ -370,7 +390,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2024-07-30 20:28:08 / 修改时间：12:28:08" itemprop="dateCreated datePublished" datetime="2024-07-30T20:28:08+00:00">2024-07-30</time>
+      <time title="创建时间：2024-07-30 20:28:08 / 修改时间：21:28:08" itemprop="dateCreated datePublished" datetime="2024-07-30T20:28:08+09:00">2024-07-30</time>
     </span>
 
   
@@ -462,7 +482,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2024-07-29 21:27:50 / 修改时间：13:27:50" itemprop="dateCreated datePublished" datetime="2024-07-29T21:27:50+00:00">2024-07-29</time>
+      <time title="创建时间：2024-07-29 21:27:50 / 修改时间：22:27:50" itemprop="dateCreated datePublished" datetime="2024-07-29T21:27:50+09:00">2024-07-29</time>
     </span>
 
   
@@ -554,7 +574,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2024-07-29 19:05:28 / 修改时间：11:05:28" itemprop="dateCreated datePublished" datetime="2024-07-29T19:05:28+00:00">2024-07-29</time>
+      <time title="创建时间：2024-07-29 19:05:28 / 修改时间：20:05:28" itemprop="dateCreated datePublished" datetime="2024-07-29T19:05:28+09:00">2024-07-29</time>
     </span>
 
   
@@ -646,7 +666,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2024-07-25 11:36:32 / 修改时间：03:36:32" itemprop="dateCreated datePublished" datetime="2024-07-25T11:36:32+00:00">2024-07-25</time>
+      <time title="创建时间：2024-07-25 11:36:32 / 修改时间：12:36:32" itemprop="dateCreated datePublished" datetime="2024-07-25T11:36:32+09:00">2024-07-25</time>
     </span>
 
   
@@ -738,7 +758,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2024-07-25 00:00:00 / 修改时间：03:34:04" itemprop="dateCreated datePublished" datetime="2024-07-25T00:00:00+00:00">2024-07-25</time>
+      <time title="创建时间：2024-07-25 00:00:00 / 修改时间：12:34:04" itemprop="dateCreated datePublished" datetime="2024-07-25T00:00:00+09:00">2024-07-25</time>
     </span>
 
   
@@ -829,14 +849,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2024-07-24 20:17:06" itemprop="dateCreated datePublished" datetime="2024-07-24T20:17:06+00:00">2024-07-24</time>
+      <time title="创建时间：2024-07-24 20:17:06" itemprop="dateCreated datePublished" datetime="2024-07-24T20:17:06+09:00">2024-07-24</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-08-06 12:04:50" itemprop="dateModified" datetime="2024-08-06T12:04:50+00:00">2024-08-06</time>
+      <time title="修改时间：2024-08-06 21:04:50" itemprop="dateModified" datetime="2024-08-06T21:04:50+09:00">2024-08-06</time>
     </span>
 
   
@@ -927,14 +947,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2024-07-24 20:17:06" itemprop="dateCreated datePublished" datetime="2024-07-24T20:17:06+00:00">2024-07-24</time>
+      <time title="创建时间：2024-07-24 20:17:06" itemprop="dateCreated datePublished" datetime="2024-07-24T20:17:06+09:00">2024-07-24</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-07-25 03:33:56" itemprop="dateModified" datetime="2024-07-25T03:33:56+00:00">2024-07-25</time>
+      <time title="修改时间：2024-07-25 12:33:56" itemprop="dateModified" datetime="2024-07-25T12:33:56+09:00">2024-07-25</time>
     </span>
 
   
@@ -1025,14 +1045,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2024-07-24 14:50:00" itemprop="dateCreated datePublished" datetime="2024-07-24T14:50:00+00:00">2024-07-24</time>
+      <time title="创建时间：2024-07-24 14:50:00" itemprop="dateCreated datePublished" datetime="2024-07-24T14:50:00+09:00">2024-07-24</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-07-25 03:33:38" itemprop="dateModified" datetime="2024-07-25T03:33:38+00:00">2024-07-25</time>
+      <time title="修改时间：2024-07-25 12:33:38" itemprop="dateModified" datetime="2024-07-25T12:33:38+09:00">2024-07-25</time>
     </span>
 
   
@@ -1123,14 +1143,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2024-07-24 07:58:06" itemprop="dateCreated datePublished" datetime="2024-07-24T07:58:06+00:00">2024-07-24</time>
+      <time title="创建时间：2024-07-24 07:58:06" itemprop="dateCreated datePublished" datetime="2024-07-24T07:58:06+09:00">2024-07-24</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-07-25 03:34:00" itemprop="dateModified" datetime="2024-07-25T03:34:00+00:00">2024-07-25</time>
+      <time title="修改时间：2024-07-25 12:34:00" itemprop="dateModified" datetime="2024-07-25T12:34:00+09:00">2024-07-25</time>
     </span>
 
   
@@ -1221,14 +1241,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2024-06-03 12:46:06" itemprop="dateCreated datePublished" datetime="2024-06-03T12:46:06+00:00">2024-06-03</time>
+      <time title="创建时间：2024-06-03 12:46:06" itemprop="dateCreated datePublished" datetime="2024-06-03T12:46:06+09:00">2024-06-03</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-07-25 03:33:52" itemprop="dateModified" datetime="2024-07-25T03:33:52+00:00">2024-07-25</time>
+      <time title="修改时间：2024-07-25 12:33:52" itemprop="dateModified" datetime="2024-07-25T12:33:52+09:00">2024-07-25</time>
     </span>
 
   
@@ -1382,6 +1402,30 @@
   <script class="next-config" data-name="enableMath" type="application/json">true</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" integrity="sha256-UF1fgpAiu3tPJN/uCqEUHNe7pnr+QR0SQDNfgglgtcM=" crossorigin="anonymous">
   <script class="next-config" data-name="katex" type="application/json">{"copy_tex_js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/copy-tex.min.js","integrity":"sha256-Us54+rSGDSTvIhKKUs4kygE2ipA0RXpWWh0/zLqw3bs="}}</script>
   <script src="/js/third-party/math/katex.js"></script>
+
+
+
+
+<div id="entry-cover" class="entry-cover"
+     data-auto-enter="0"
+     role="dialog" aria-modal="true" aria-label="欢迎来到 Nozie's Blog">
+  <div class="ec-horizon" aria-hidden="true"></div>
+  <canvas id="ec-stars" class="ec-canvas" aria-hidden="true"></canvas>
+  <canvas id="ec-waves" class="ec-canvas" aria-hidden="true"></canvas>
+  <div class="ec-vignette" aria-hidden="true"></div>
+
+  <div class="ec-content">
+    <div class="ec-mark" aria-hidden="true"><i></i></div>
+    <h1 class="ec-title">Nozie's Blog</h1>
+    <p class="ec-sub">不执笔墨，便化丹青</p>
+    <p class="ec-poem">If you cannot be the poet, be the poem</p>
+    <button class="ec-enter" type="button">
+      <span>进 入</span><i class="ec-arrow" aria-hidden="true"></i>
+    </button>
+    <p class="ec-hint">点击任意处 · 或按 Enter</p>
+  </div>
+</div>
+<script src="/js/entry-cover.js" defer></script>
 
 
 
