@@ -174,13 +174,13 @@ body,[data-theme=dark] body{background:#e9e2e8}.wallpaper{position:fixed;inset:0
 .snake-block.fed{animation:snake-bite .45s ease-out}@keyframes snake-bite{0%{filter:brightness(1.1);box-shadow:0 0 0 0 #e9a1b17a}50%{filter:brightness(1.2);box-shadow:0 0 0 5px #e9a1b124}100%{filter:none;box-shadow:0 0 0 8px #e9a1b100}}
 @media(prefers-reduced-motion:reduce){.snake-block.fed{animation:none}.contribution-day.snake-food{transform:none}}
 
-/* The wordmark belongs to the moon; its position follows the same soft parallax. */
+/* Centered cover wordmark. */
 @font-face{font-family:'Nozie Sans';font-style:normal;font-weight:300;font-display:swap;src:url('/fonts/nozie-sans-light.woff2') format('woff2')}
-.cover-name{left:var(--moon-x,50%);top:var(--moon-y,35%);padding:16px 18px;font:normal 300 clamp(40px,4.7vw,58px)/1.2 'Nozie Sans',sans-serif;letter-spacing:.045em;text-indent:.045em;transform:translate(-50%,-50%) translateY(calc(var(--entry-depth,0)*-70px)) scale(calc(1 - var(--entry-depth,0)*.1));filter:drop-shadow(0 3px 16px var(--ec-title-glow)) blur(calc(var(--entry-depth,0)*4px))}.cover-name>span{text-shadow:none}.cover-name:focus-visible{border-radius:50%;outline-color:#a6cce080}
+.cover-name{left:50%;top:35%;padding:16px 18px;font:normal 300 clamp(40px,4.7vw,58px)/1.2 'Nozie Sans',sans-serif;letter-spacing:.045em;text-indent:.045em;transform:translate(-50%,-50%) translateY(calc(var(--entry-depth,0)*-70px)) scale(calc(1 - var(--entry-depth,0)*.1));filter:drop-shadow(0 3px 16px var(--ec-title-glow)) blur(calc(var(--entry-depth,0)*4px))}.cover-name>span{text-shadow:none}.cover-name:focus-visible{border-radius:8px;outline-color:#a6cce080}
 @media(max-width:700px){.cover-name{font-size:42px;padding:14px 16px;letter-spacing:.04em;text-indent:.04em}}
 @media(prefers-reduced-motion:reduce){.cover-name{transform:translate(-50%,-50%);filter:none}}
 
-.cover-name{color:#344a62;background:none;-webkit-text-fill-color:currentColor;text-shadow:0 1px 8px #ffffff55;filter:blur(calc(var(--entry-depth,0)*4px))}.cover-name>span{color:inherit}.cover-name:hover{text-shadow:0 1px 12px #ffffff88}[data-theme=dark] .cover-name{color:#344356}
+.cover-name{color:#344a62;background:none;-webkit-text-fill-color:currentColor;text-shadow:0 1px 8px #ffffff55;filter:blur(calc(var(--entry-depth,0)*4px))}.cover-name>span{color:inherit}.cover-name:hover{text-shadow:0 1px 12px #ffffff88}[data-theme=dark] .cover-name{color:#d4ebfb;text-shadow:0 2px 18px #9bc5ed33}
 @media(max-width:700px){.cover-name{font-size:40px;letter-spacing:.035em;text-indent:.035em}}
 
-.about-story>.asset-credit{font-size:10px;color:var(--muted);margin-top:28px}
+

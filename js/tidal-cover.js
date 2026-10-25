@@ -1,4 +1,4 @@
-/*! Nozie · 潮汐。沿用原封面的海浪，增加玻璃月轮、月光与触水涟漪。 */
+/*! Nozie · 潮汐。海浪、流星、触水涟漪与跃动的圆点。 */
 (function () {
   'use strict';
 
@@ -16,7 +16,6 @@
 
   var W = 0, H = 0, dpr = 1;
   var pal = readPalette();
-  var moonSurface = null;
   var stars = [];
   var motes = [];
   var ripples = [];
@@ -249,58 +248,6 @@
     }
   }
 
-  function moonPosition() {
-    return {x: W * .5 + px * 10, y: H * .35 + drift * 8,
-      r: Math.min(138, W * .28, H * .19)};
-  }
-
-  // NASA SVS CGI Moon Kit albedo, projected onto a lit sphere once and cached.
-  function loadMoonSurface() {
-    var image=new Image();image.decoding='async';
-    image.onload=function(){
-      var map=document.createElement('canvas');map.width=image.width;map.height=image.height;
-      var mapContext=map.getContext('2d',{willReadFrequently:true});mapContext.drawImage(image,0,0);
-      var source=mapContext.getImageData(0,0,map.width,map.height).data;
-      var size=640,surface=document.createElement('canvas');surface.width=surface.height=size;
-      var context=surface.getContext('2d'),pixels=context.createImageData(size,size),out=pixels.data;
-      for(var py=0;py<size;py++)for(var px=0;px<size;px++){
-        var nx=(px+.5)/size*2-1,ny=(py+.5)/size*2-1,d=nx*nx+ny*ny;
-        if(d>=1)continue;
-        var nz=Math.sqrt(1-d),angle=-.12,rx=nx*Math.cos(angle)-ny*Math.sin(angle),ry=nx*Math.sin(angle)+ny*Math.cos(angle);
-        var u=(Math.atan2(rx,nz)/TAU+.5)*(map.width-1),v=(.5+Math.asin(ry)/Math.PI)*(map.height-1);
-        var ix=Math.floor(u),iy=Math.floor(v),fx=u-ix,fy=v-iy;
-        var a=(iy*map.width+ix)*4,b=a+4,c=a+map.width*4,e=c+4;
-        var color=[];
-        for(var channel=0;channel<3;channel++)color[channel]=(source[a+channel]*(1-fx)+source[b+channel]*fx)*(1-fy)+(source[c+channel]*(1-fx)+source[e+channel]*fx)*fy;
-        var luminance=(color[0]*.2126+color[1]*.7152+color[2]*.0722)/255;
-        var tone=182+(Math.pow(luminance,.7)-.5)*145;
-        var light=.64+.36*Math.max(0,-nx*.29-ny*.30+nz*.909);
-        var index=(py*size+px)*4;
-        out[index]=Math.min(255,tone*light*1.015+7);
-        out[index+1]=Math.min(255,tone*light*1.025+8);
-        out[index+2]=Math.min(255,tone*light*1.05+11);
-        out[index+3]=Math.min(255,(1-Math.sqrt(d))*size*127.5);
-      }
-      context.putImageData(pixels,0,0);moonSurface=surface;
-      if(reduced.matches)drawWaves(0);
-    };
-    image.src=(document.body.dataset.root||'/')+'images/moon-albedo.jpg';
-  }
-
-  function drawMoon(now) {
-    var m=moonPosition(),x=m.x,y=m.y,r=m.r;
-    cover.parentNode.style.setProperty('--moon-x',x+'px');cover.parentNode.style.setProperty('--moon-y',y+'px');
-    var glow=wctx.createRadialGradient(x,y,r*.94,x,y,r*1.7);
-    glow.addColorStop(0,'rgba(242,242,255,.24)');
-    glow.addColorStop(.3,'rgba(227,234,253,.095)');
-    glow.addColorStop(1,'rgba(227,234,253,0)');
-    wctx.fillStyle=glow;wctx.fillRect(x-r*1.7,y-r*1.7,r*3.4,r*3.4);
-    if(moonSurface){wctx.drawImage(moonSurface,x-r,y-r,r*2,r*2);return;}
-    var fallback=wctx.createRadialGradient(x-r*.3,y-r*.35,r*.1,x,y,r);
-    fallback.addColorStop(0,'#f2f0ed');fallback.addColorStop(.7,'#d9e0e9');fallback.addColorStop(1,'#bac8d9');
-    wctx.beginPath();wctx.arc(x,y,r,0,TAU);wctx.fillStyle=fallback;wctx.fill();
-  }
-
   function drawMeteors(now) {
     if(reduced.matches)return;
     if(!nextMeteor)nextMeteor=now+3500;
@@ -318,19 +265,6 @@
       wctx.strokeStyle=trail;wctx.lineWidth=1;wctx.stroke();
       wctx.beginPath();wctx.arc(x,y,1.2,0,TAU);wctx.fillStyle='rgba('+pal.foam+','+a+')';wctx.fill();
     });
-  }
-
-  function drawMoonlight(now, hz) {
-    var m=moonPosition(),seaH=H-hz,t=now/1000;
-    if(hz<0)return;
-    for(var i=0;i<30;i++){
-      var depth=i/30,y=hz+10+Math.pow(depth,1.4)*seaH*.76;
-      var x=m.x+Math.sin(t*.7+i*1.6)*(4+depth*13),width=(7+depth*63)*(.65+.35*Math.sin(i*3.7+t));
-      var a=(1-depth)*(.10+.05*Math.sin(t*.8+i));
-      var light=wctx.createLinearGradient(x-width,y,x+width,y);
-      light.addColorStop(0,'rgba('+pal.foam+',0)');light.addColorStop(.5,'rgba('+pal.foam+','+a+')');light.addColorStop(1,'rgba('+pal.foam+',0)');
-      wctx.fillStyle=light;wctx.fillRect(x-width,y,width*2,1+depth);
-    }
   }
 
   function drawTouches(now) {
@@ -399,7 +333,7 @@
     var breath = Math.sin(t * .26) * H * .004;   // 整片海轻轻呼吸
 
     wctx.clearRect(0, 0, W, H);
-    drawMoon(now || 0);drawMeteors(now || 0);
+    drawMeteors(now || 0);
 
     // 地平线附近的雾：远处的水化进天光里，不留生硬的接缝
     var hz = H * HORIZON;
@@ -483,7 +417,6 @@
         wctx.setLineDash([]);
       }
     }
-    drawMoonlight(now || 0, hzDraw);
   }
 
   /* ══════════ 主循环 ══════════ */
@@ -514,5 +447,5 @@
   document.addEventListener('visibilitychange',sync);reduced.addEventListener('change',sync);
   new IntersectionObserver(function(entries){active=entries[0].isIntersecting;sync();}).observe(cover.parentNode);
   new MutationObserver(function(){pal=readPalette();drawStars();if(reduced.matches)drawWaves(0);}).observe(html,{attributes:true,attributeFilter:['data-theme']});
-  resize();updateDepth();sync();loadMoonSurface();
+  resize();updateDepth();sync();
 })();
