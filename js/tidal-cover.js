@@ -16,6 +16,7 @@
 
   var W = 0, H = 0, dpr = 1;
   var pal = readPalette();
+  var moonSurface = null;
   var stars = [];
   var motes = [];
   var ripples = [];
@@ -253,38 +254,51 @@
       r: Math.min(138, W * .28, H * .19)};
   }
 
+  // NASA SVS CGI Moon Kit albedo, projected onto a lit sphere once and cached.
+  function loadMoonSurface() {
+    var image=new Image();image.decoding='async';
+    image.onload=function(){
+      var map=document.createElement('canvas');map.width=image.width;map.height=image.height;
+      var mapContext=map.getContext('2d',{willReadFrequently:true});mapContext.drawImage(image,0,0);
+      var source=mapContext.getImageData(0,0,map.width,map.height).data;
+      var size=640,surface=document.createElement('canvas');surface.width=surface.height=size;
+      var context=surface.getContext('2d'),pixels=context.createImageData(size,size),out=pixels.data;
+      for(var py=0;py<size;py++)for(var px=0;px<size;px++){
+        var nx=(px+.5)/size*2-1,ny=(py+.5)/size*2-1,d=nx*nx+ny*ny;
+        if(d>=1)continue;
+        var nz=Math.sqrt(1-d),angle=-.12,rx=nx*Math.cos(angle)-ny*Math.sin(angle),ry=nx*Math.sin(angle)+ny*Math.cos(angle);
+        var u=(Math.atan2(rx,nz)/TAU+.5)*(map.width-1),v=(.5+Math.asin(ry)/Math.PI)*(map.height-1);
+        var ix=Math.floor(u),iy=Math.floor(v),fx=u-ix,fy=v-iy;
+        var a=(iy*map.width+ix)*4,b=a+4,c=a+map.width*4,e=c+4;
+        var color=[];
+        for(var channel=0;channel<3;channel++)color[channel]=(source[a+channel]*(1-fx)+source[b+channel]*fx)*(1-fy)+(source[c+channel]*(1-fx)+source[e+channel]*fx)*fy;
+        var luminance=(color[0]*.2126+color[1]*.7152+color[2]*.0722)/255;
+        var tone=182+(Math.pow(luminance,.7)-.5)*145;
+        var light=.64+.36*Math.max(0,-nx*.29-ny*.30+nz*.909);
+        var index=(py*size+px)*4;
+        out[index]=Math.min(255,tone*light*1.015+7);
+        out[index+1]=Math.min(255,tone*light*1.025+8);
+        out[index+2]=Math.min(255,tone*light*1.05+11);
+        out[index+3]=Math.min(255,(1-Math.sqrt(d))*size*127.5);
+      }
+      context.putImageData(pixels,0,0);moonSurface=surface;
+      if(reduced.matches)drawWaves(0);
+    };
+    image.src=(document.body.dataset.root||'/')+'images/moon-albedo.jpg';
+  }
+
   function drawMoon(now) {
-    var m = moonPosition(), x = m.x, y = m.y, r = m.r;
-    cover.parentNode.style.setProperty('--moon-x', x+'px');
-    cover.parentNode.style.setProperty('--moon-y', y+'px');
-    var glow = wctx.createRadialGradient(x, y, r * .5, x, y, r * 3.2);
-    glow.addColorStop(0, 'rgba(244, 225, 249, .23)');
-    glow.addColorStop(.48, 'rgba(222, 240, 255, .10)');
-    glow.addColorStop(1, 'rgba(222, 240, 255, 0)');
-    wctx.fillStyle = glow;wctx.fillRect(x-r*3.2, y-r*3.2, r*6.4, r*6.4);
-    wctx.save();wctx.translate(x,y);wctx.rotate(-.35);
-    // A thin broken halo and a translucent, softly refracting moon.
-    wctx.beginPath();wctx.arc(0,0,r*1.13,-2.8,.4);
-    wctx.strokeStyle='rgba(188, 216, 245, .42)';wctx.lineWidth=.7;wctx.stroke();
-    var glass=wctx.createLinearGradient(-r,-r,r,r);
-    glass.addColorStop(0,'rgba(255,255,255,.72)');
-    glass.addColorStop(.42,'rgba(236,248,255,.26)');
-    glass.addColorStop(.74,'rgba(235,218,244,.18)');
-    glass.addColorStop(1,'rgba(255,242,250,.48)');
-    wctx.beginPath();wctx.arc(0,0,r,0,TAU);wctx.fillStyle=glass;wctx.fill();
-    wctx.strokeStyle='rgba(251,253,255,.72)';wctx.lineWidth=1;wctx.stroke();
-    wctx.save();wctx.clip();
-    var shadow=wctx.createRadialGradient(r*.38,r*.1,r*.15,r*.38,r*.1,r*1.3);
-    shadow.addColorStop(0,'rgba(143,179,219,.17)');shadow.addColorStop(1,'rgba(143,179,219,0)');
-    wctx.fillStyle=shadow;wctx.fillRect(-r,-r,r*2,r*2);
-    [[-.22,-.12,.17],[.35,.31,.11],[.19,-.43,.075],[-.45,.33,.07]].forEach(function(c){
-      var cr=wctx.createRadialGradient(c[0]*r,c[1]*r,0,c[0]*r,c[1]*r,c[2]*r);
-      cr.addColorStop(0,'rgba(159,182,217,.13)');cr.addColorStop(1,'rgba(159,182,217,0)');
-      wctx.fillStyle=cr;wctx.beginPath();wctx.arc(c[0]*r,c[1]*r,c[2]*r,0,TAU);wctx.fill();
-    });
-    wctx.restore();wctx.beginPath();wctx.arc(0,0,r*.91,-2.8,-1.05);
-    wctx.strokeStyle='rgba(255,255,255,.72)';wctx.lineWidth=1.6;wctx.lineCap='round';wctx.stroke();
-    wctx.restore();
+    var m=moonPosition(),x=m.x,y=m.y,r=m.r;
+    cover.parentNode.style.setProperty('--moon-x',x+'px');cover.parentNode.style.setProperty('--moon-y',y+'px');
+    var glow=wctx.createRadialGradient(x,y,r*.94,x,y,r*1.7);
+    glow.addColorStop(0,'rgba(242,242,255,.24)');
+    glow.addColorStop(.3,'rgba(227,234,253,.095)');
+    glow.addColorStop(1,'rgba(227,234,253,0)');
+    wctx.fillStyle=glow;wctx.fillRect(x-r*1.7,y-r*1.7,r*3.4,r*3.4);
+    if(moonSurface){wctx.drawImage(moonSurface,x-r,y-r,r*2,r*2);return;}
+    var fallback=wctx.createRadialGradient(x-r*.3,y-r*.35,r*.1,x,y,r);
+    fallback.addColorStop(0,'#f2f0ed');fallback.addColorStop(.7,'#d9e0e9');fallback.addColorStop(1,'#bac8d9');
+    wctx.beginPath();wctx.arc(x,y,r,0,TAU);wctx.fillStyle=fallback;wctx.fill();
   }
 
   function drawMeteors(now) {
@@ -500,5 +514,5 @@
   document.addEventListener('visibilitychange',sync);reduced.addEventListener('change',sync);
   new IntersectionObserver(function(entries){active=entries[0].isIntersecting;sync();}).observe(cover.parentNode);
   new MutationObserver(function(){pal=readPalette();drawStars();if(reduced.matches)drawWaves(0);}).observe(html,{attributes:true,attributeFilter:['data-theme']});
-  resize();updateDepth();sync();
+  resize();updateDepth();sync();loadMoonSurface();
 })();
