@@ -186,21 +186,21 @@
       detail.hidden=!entries.length;
       entries.forEach(record=>{const link=document.createElement('a');link.href='https://github.com/Nuoziy/Nuoziy.github.io/commit/'+record.sha;link.target='_blank';link.rel='noopener noreferrer';const label=document.createElement('span'),sha=document.createElement('code');label.textContent=record.subject.startsWith('Site updated:')?'更新博客':record.subject==='First commit'?'首次上传':record.subject==='Create CNAME'?'更新域名配置':record.subject;sha.textContent=record.sha.slice(0,7)+' ↗';link.append(label,sha);detail.append(link);});
     };
-    let restartSnake=()=>{};
+    let restartSnake=()=>{},feedSnake=()=>{};
     const renderYear=()=>{
       const year=Number(yearSelect.value),first=new Date(Date.UTC(year,0,1)),lastDate=new Date(Date.UTC(year,11,31)),days=Math.round((lastDate-first)/86400000)+1,offset=first.getUTCDay(),weeks=Math.ceil((offset+days)/7);
       const uploads=records.filter(record=>localDate(record.date).startsWith(String(year))).length;
       $('.upload-total').textContent=`${uploads} 次上传`;
       grid.style.setProperty('--weeks',weeks);months.style.setProperty('--weeks',weeks);grid.replaceChildren();months.replaceChildren();detail.hidden=true;
-      status.textContent='根据博客仓库的真实提交记录生成';
+      status.textContent='点一个日期，喂小蛇 · 上传记录来自真实提交';
       for(let month=0;month<12;month++){const date=new Date(Date.UTC(year,month,1)),day=Math.round((date-first)/86400000),label=document.createElement('span');label.textContent=(month+1)+'月';label.style.gridColumn=String(Math.floor((offset+day)/7)+1);months.append(label);}
       for(let i=0;i<weeks*7;i++){
         const number=i-offset,button=document.createElement('button');button.className='contribution-day';
         if(number<0||number>=days){button.classList.add('spacer');button.disabled=true;button.setAttribute('aria-hidden','true');grid.append(button);continue;}
         const day=new Date(Date.UTC(year,0,number+1)).toISOString().slice(0,10),count=(byDay.get(day)||[]).length;
         button.dataset.day=day;button.dataset.level=String(Math.min(4,count));button.title=describe(day);button.setAttribute('aria-label',describe(day));button.setAttribute('aria-pressed','false');button.tabIndex=-1;
-        if(day>today){button.classList.add('future');button.disabled=true;}
-        else{button.addEventListener('click',()=>showDay(button));button.addEventListener('pointerenter',()=>status.textContent=describe(day));button.addEventListener('focus',()=>status.textContent=describe(day));}
+        if(day>today)button.classList.add('future');
+        button.addEventListener('click',()=>{showDay(button);feedSnake(button);});button.addEventListener('pointerenter',()=>status.textContent=describe(day));button.addEventListener('focus',()=>status.textContent=describe(day));
         grid.append(button);
       }
       const squares=$$('.contribution-day:not(:disabled)',grid),latest=squares.filter(button=>Number(button.dataset.level)>0).at(-1)||squares.at(-1);if(latest)latest.tabIndex=0;restartSnake();
@@ -212,9 +212,9 @@
     // A trail of fixed grid squares: movement is expressed through scale and colour.
     const snakeLayer=document.createElement('div');snakeLayer.className='contribution-snake';snakeLayer.setAttribute('aria-hidden','true');grid.append(snakeLayer);
     const legend=$('.contribution-legend'),toggle=document.createElement('button');toggle.className='snake-toggle';toggle.setAttribute('aria-label','暂停小蛇');toggle.setAttribute('aria-pressed','false');toggle.innerHTML='<svg width="22" height="15" viewBox="0 0 28 18" fill="currentColor" aria-hidden="true"><rect x="2" y="10" width="5" height="5" rx="1" opacity=".35"/><rect x="8" y="10" width="5" height="5" rx="1" opacity=".55"/><rect x="14" y="10" width="5" height="5" rx="1" opacity=".7"/><rect x="18" y="2" width="9" height="9" rx="1.5"/></svg>';legend.prepend(toggle);
-    let cells=[],snake=[],direction=[1,0],timer=0,hover=false,manualPause=false,inView=true,step=0;
-    const interval=460;
-    const indexAt=(column,row)=>cells.findIndex(cell=>cell.col===column&&cell.row===row);
+    let cells=[],cellIndex=new Map(),snake=[],direction=[1,0],timer=0,manualPause=false,inView=true,step=0,foodDay=null;
+    const interval=460,chaseInterval=150;
+    const indexAt=(column,row)=>cellIndex.get(column+','+row)??-1;
     const paintSnake=()=>{
       const positions=new Map(snake.map((index,i)=>[index,i]));
       cells.forEach((cell,index)=>{
@@ -232,24 +232,61 @@
     const measureSnake=()=>{
       snakeLayer.replaceChildren();const children=[...grid.children];
       cells=$$('.contribution-day[data-day]',grid).map(button=>{
-        const i=children.indexOf(button),block=document.createElement('span');block.className='snake-block';block.style.left=(button.offsetLeft+button.offsetWidth/2)+'px';block.style.top=(button.offsetTop+button.offsetHeight/2)+'px';block.style.width=button.offsetWidth+'px';block.style.height=button.offsetHeight+'px';snakeLayer.append(block);
-        return{col:Math.floor(i/7),row:i%7,block};
+        const i=children.indexOf(button),block=document.createElement('span');block.className='snake-block';block.dataset.day=button.dataset.day;block.style.left=(button.offsetLeft+button.offsetWidth/2)+'px';block.style.top=(button.offsetTop+button.offsetHeight/2)+'px';block.style.width=button.offsetWidth+'px';block.style.height=button.offsetHeight+'px';snakeLayer.append(block);
+        return{col:Math.floor(i/7),row:i%7,block,button};
       });
+      cellIndex=new Map(cells.map((cell,index)=>[cell.col+','+cell.row,index]));
+      if(foodDay&&!cells.some(cell=>cell.button.dataset.day===foodDay)){foodDay=null;delete snakeLayer.dataset.targetDay;}
       const startColumn=Math.min(38,Math.floor(Number(grid.style.getPropertyValue('--weeks'))*.7));
       snake=Array.from({length:9},(_,i)=>indexAt(startColumn-i,3)).filter(i=>i>=0);direction=[1,0];step=0;paintSnake();
     };
-    const advanceSnake=()=>{
-      const head=cells[snake[0]];if(!head)return;
-      const directions=[[1,0],[0,1],[-1,0],[0,-1]],available=directions.map(d=>({d,i:indexAt(head.col+d[0],head.row+d[1])})).filter(choice=>choice.i>=0&&!snake.slice(0,-1).includes(choice.i));
-      const straight=available.find(choice=>choice.d[0]===direction[0]&&choice.d[1]===direction[1]),next=straight&&Math.random()>.3?straight:available[Math.floor(Math.random()*available.length)];
-      if(!next){snake.reverse();direction=[-direction[0],-direction[1]];paintSnake();return;}
-      snake.unshift(next.i);if(snake.length>9)snake.pop();direction=next.d;step++;paintSnake();
+    const directions=[[1,0],[0,1],[-1,0],[0,-1]];
+    const eatFood=()=>{
+      if(!foodDay||cells[snake[0]]?.button.dataset.day!==foodDay)return;
+      const day=foodDay,cell=cells[snake[0]];foodDay=null;delete snakeLayer.dataset.targetDay;
+      cell.button.classList.remove('snake-food');cell.block.classList.remove('fed');
+      // Restart the small head pulse even when two nearby dates are eaten in succession.
+      void cell.block.offsetWidth;cell.block.classList.add('fed');
+      cell.block.addEventListener('animationend',()=>cell.block.classList.remove('fed'),{once:true});
+      status.textContent=describe(day)+' · 吃掉了';syncSnake();
     };
-    const syncSnake=()=>{clearInterval(timer);snakeLayer.classList.toggle('resting',hover||manualPause);if(!document.hidden&&!reducedMotion.matches&&!hover&&!manualPause&&inView)timer=setInterval(advanceSnake,interval);};
-    restartSnake=()=>{if(!snakeLayer.isConnected)grid.append(snakeLayer);measureSnake();syncSnake();};restartSnake();
-    toggle.addEventListener('click',()=>{manualPause=!manualPause;toggle.setAttribute('aria-pressed',String(manualPause));toggle.setAttribute('aria-label',manualPause?'继续小蛇动画':'暂停小蛇');syncSnake();});
-    const container=$('.contribution-container');container.addEventListener('pointerenter',()=>{hover=true;syncSnake();});container.addEventListener('pointerleave',()=>{hover=false;syncSnake();});
-    grid.addEventListener('focusin',()=>{hover=true;syncSnake();});grid.addEventListener('focusout',event=>{if(!grid.contains(event.relatedTarget)){hover=false;syncSnake();}});
+    const routeToFood=()=>{
+      const target=cells.findIndex(cell=>cell.button.dataset.day===foodDay);
+      if(target<0||target===snake[0])return null;
+      // Re-plan each step: the tail is free to leave its current square.
+      const occupied=new Set(snake.slice(0,-1)),parents=new Map([[snake[0],null]]),queue=[snake[0]];
+      for(let cursor=0;cursor<queue.length;cursor++){
+        const current=queue[cursor],cell=cells[current];
+        for(const d of directions){
+          const next=indexAt(cell.col+d[0],cell.row+d[1]);
+          if(next<0||occupied.has(next)||parents.has(next))continue;
+          parents.set(next,current);
+          if(next===target){let first=next;while(parents.get(first)!==snake[0])first=parents.get(first);return first;}
+          queue.push(next);
+        }
+      }
+      return null;
+    };
+    const advanceSnake=()=>{
+      eatFood();const head=cells[snake[0]];if(!head)return;
+      const occupied=new Set(snake.slice(0,-1)),available=directions.map(d=>({d,i:indexAt(head.col+d[0],head.row+d[1])})).filter(choice=>choice.i>=0&&!occupied.has(choice.i));
+      const route=foodDay?routeToFood():null,straight=available.find(choice=>choice.d[0]===direction[0]&&choice.d[1]===direction[1]);
+      const next=route!==null?available.find(choice=>choice.i===route):(straight&&Math.random()>.3?straight:available[Math.floor(Math.random()*available.length)]);
+      if(!next){snake.reverse();direction=[-direction[0],-direction[1]];paintSnake();eatFood();return;}
+      snake.unshift(next.i);if(snake.length>9)snake.pop();direction=next.d;step++;paintSnake();eatFood();
+    };
+    const syncSnake=()=>{
+      clearInterval(timer);snakeLayer.classList.toggle('resting',manualPause);
+      if(!document.hidden&&!reducedMotion.matches&&!manualPause&&inView)timer=setInterval(advanceSnake,foodDay?chaseInterval:interval);
+    };
+    feedSnake=button=>{
+      $$('.snake-food',grid).forEach(cell=>cell.classList.remove('snake-food'));
+      foodDay=button.dataset.day;snakeLayer.dataset.targetDay=foodDay;button.classList.add('snake-food');
+      status.textContent=describe(foodDay)+(manualPause?' · 小蛇已暂停':' · 小蛇正在靠近');
+      eatFood();syncSnake();
+    };
+    restartSnake=()=>{if(!snakeLayer.isConnected)grid.append(snakeLayer);measureSnake();eatFood();syncSnake();};restartSnake();
+    toggle.addEventListener('click',()=>{manualPause=!manualPause;toggle.setAttribute('aria-pressed',String(manualPause));toggle.setAttribute('aria-label',manualPause?'继续小蛇动画':'暂停小蛇');if(foodDay)status.textContent=describe(foodDay)+(manualPause?' · 小蛇已暂停':' · 小蛇正在靠近');syncSnake();});
     new IntersectionObserver(entries=>{inView=entries[0].isIntersecting;syncSnake();},{rootMargin:'100px'}).observe(grid);
     addEventListener('resize',restartSnake);document.addEventListener('visibilitychange',syncSnake);reducedMotion.addEventListener('change',syncSnake);
 

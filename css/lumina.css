@@ -167,3 +167,9 @@ body,[data-theme=dark] body{background:#e9e2e8}.wallpaper{position:fixed;inset:0
 
 .sidebar-glass{padding-top:24px}.sidebar-portrait{width:72px;height:72px;border-radius:22px;margin-bottom:12px}.sidebar-name{font-size:33px}.sidebar-stats{margin:18px 0}.sidebar-nav{padding-bottom:16px}.sidebar-nav a{padding-top:7px;padding-bottom:7px}.sidebar-recent{padding-top:17px;padding-bottom:16px}.sidebar-recent h2{margin-bottom:10px}.sidebar-recent>a{padding-top:5px;padding-bottom:5px}
 @media(min-width:1001px) and (max-height:680px){.journal-sidebar{top:16px;max-height:calc(100svh - 32px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:#9cabbe55 transparent}.sidebar-recent{display:none}}
+
+/* A clicked date becomes food; the underlying upload value stays untouched. */
+.contribution-day.snake-food,.contribution-day.snake-food.future,[data-theme=dark] .contribution-day.snake-food{background:#e78595;border-color:#d76e83;opacity:1;box-shadow:0 0 0 2px #ec9aab38;z-index:1;transform:scale(1.12)}
+.contribution-day.snake-food[aria-pressed=true]{outline-color:#d76e83}.contribution-day.snake-food:hover{transform:scale(1.12);outline-color:#d76e83}
+.snake-block.fed{animation:snake-bite .45s ease-out}@keyframes snake-bite{0%{filter:brightness(1.1);box-shadow:0 0 0 0 #e9a1b17a}50%{filter:brightness(1.2);box-shadow:0 0 0 5px #e9a1b124}100%{filter:none;box-shadow:0 0 0 8px #e9a1b100}}
+@media(prefers-reduced-motion:reduce){.snake-block.fed{animation:none}.contribution-day.snake-food{transform:none}}
