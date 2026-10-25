@@ -1,15 +1,4 @@
-/*!
- * 入站封面 ·「潮汐」 —— Nozie's Blog
- * ---------------------------------------------------------------------------
- * 两片 canvas：上面一片静止的星空，下面一片会呼吸的海。
- * 点一下 / 按 Enter，海水涨满整个屏幕，再退去，露出博客。
- *
- * 结构：source/_data/body-end.njk
- * 样式：source/_data/styles.styl 第 ⑧ 节
- * 开关：_config.hexo-theme-next-master.yml 的 ⑮ entry_cover
- * 再看一次：网址后面加 ?cover=1
- * ---------------------------------------------------------------------------
- */
+/*! Nozie · 潮汐。沿用原封面的海浪，增加玻璃月轮、月光与触水涟漪。 */
 (function () {
   'use strict';
 
@@ -20,8 +9,6 @@
 
   var starsCv = document.getElementById('ec-stars');
   var wavesCv = document.getElementById('ec-waves');
-  var content = cover.querySelector('.ec-content');
-  var btn = cover.querySelector('.ec-enter');
   var sctx = starsCv.getContext('2d');
   var wctx = wavesCv.getContext('2d');
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -38,6 +25,7 @@
   var surgeAt = 0;
   var px = 0;          // 指针横向 → 海面漂移
   var drift = 0;       // 指针纵向 → 浪高
+  var meteors = [], touches = [], nextMeteor = 0;
   var tx = 0, td = 0;  // 目标值
 
   /* 海平线的高度（占屏高比例），竖屏会低一点，海面才够开阔 */
@@ -259,6 +247,88 @@
     }
   }
 
+  function moonPosition() {
+    return {x: W * .78 + px * 13, y: (W < 700 ? Math.max(H * .4, H * .19 + 175) : H * .30) + drift * 10,
+      r: W < 700 ? Math.min(42, W * .095) : Math.min(64, W * .047)};
+  }
+
+  function drawMoon(now) {
+    var m = moonPosition(), x = m.x, y = m.y, r = m.r;
+    var glow = wctx.createRadialGradient(x, y, r * .5, x, y, r * 3.2);
+    glow.addColorStop(0, 'rgba(244, 225, 249, .23)');
+    glow.addColorStop(.48, 'rgba(222, 240, 255, .10)');
+    glow.addColorStop(1, 'rgba(222, 240, 255, 0)');
+    wctx.fillStyle = glow;wctx.fillRect(x-r*3.2, y-r*3.2, r*6.4, r*6.4);
+    wctx.save();wctx.translate(x,y);wctx.rotate(-.35);
+    // A thin broken halo and a translucent, softly refracting moon.
+    wctx.beginPath();wctx.arc(0,0,r*1.13,-2.8,.4);
+    wctx.strokeStyle='rgba(188, 216, 245, .42)';wctx.lineWidth=.7;wctx.stroke();
+    var glass=wctx.createLinearGradient(-r,-r,r,r);
+    glass.addColorStop(0,'rgba(255,255,255,.72)');
+    glass.addColorStop(.42,'rgba(236,248,255,.26)');
+    glass.addColorStop(.74,'rgba(235,218,244,.18)');
+    glass.addColorStop(1,'rgba(255,242,250,.48)');
+    wctx.beginPath();wctx.arc(0,0,r,0,TAU);wctx.fillStyle=glass;wctx.fill();
+    wctx.strokeStyle='rgba(251,253,255,.72)';wctx.lineWidth=1;wctx.stroke();
+    wctx.save();wctx.clip();
+    var shadow=wctx.createRadialGradient(r*.38,r*.1,r*.15,r*.38,r*.1,r*1.3);
+    shadow.addColorStop(0,'rgba(143,179,219,.17)');shadow.addColorStop(1,'rgba(143,179,219,0)');
+    wctx.fillStyle=shadow;wctx.fillRect(-r,-r,r*2,r*2);
+    [[-.22,-.12,.17],[.35,.31,.11],[.19,-.43,.075],[-.45,.33,.07]].forEach(function(c){
+      var cr=wctx.createRadialGradient(c[0]*r,c[1]*r,0,c[0]*r,c[1]*r,c[2]*r);
+      cr.addColorStop(0,'rgba(159,182,217,.13)');cr.addColorStop(1,'rgba(159,182,217,0)');
+      wctx.fillStyle=cr;wctx.beginPath();wctx.arc(c[0]*r,c[1]*r,c[2]*r,0,TAU);wctx.fill();
+    });
+    wctx.restore();wctx.beginPath();wctx.arc(0,0,r*.91,-2.8,-1.05);
+    wctx.strokeStyle='rgba(255,255,255,.72)';wctx.lineWidth=1.6;wctx.lineCap='round';wctx.stroke();
+    wctx.restore();
+  }
+
+  function drawMeteors(now) {
+    if(reduced.matches)return;
+    if(!nextMeteor)nextMeteor=now+3500;
+    if(now>=nextMeteor){
+      meteors.push({x:W*(.12+Math.random()*.5),y:H*(.07+Math.random()*.17),born:now});
+      nextMeteor=now+11000+Math.random()*9000;
+    }
+    meteors=meteors.filter(function(m){return now-m.born<1400;});
+    meteors.forEach(function(m){
+      var p=(now-m.born)/1400,dx=Math.min(W*.18,210),x=m.x+dx*p,y=m.y+dx*.42*p;
+      var length=Math.min(90,dx*.65)*Math.min(1,p*7),a=Math.sin(p*Math.PI)*.6;
+      var trail=wctx.createLinearGradient(x-length,y-length*.42,x,y);
+      trail.addColorStop(0,'rgba('+pal.foam+',0)');trail.addColorStop(1,'rgba('+pal.foam+','+a+')');
+      wctx.beginPath();wctx.moveTo(x-length,y-length*.42);wctx.lineTo(x,y);
+      wctx.strokeStyle=trail;wctx.lineWidth=1;wctx.stroke();
+      wctx.beginPath();wctx.arc(x,y,1.2,0,TAU);wctx.fillStyle='rgba('+pal.foam+','+a+')';wctx.fill();
+    });
+  }
+
+  function drawMoonlight(now, hz) {
+    var m=moonPosition(),seaH=H-hz,t=now/1000;
+    if(hz<0)return;
+    for(var i=0;i<30;i++){
+      var depth=i/30,y=hz+10+Math.pow(depth,1.4)*seaH*.76;
+      var x=m.x+Math.sin(t*.7+i*1.6)*(4+depth*13),width=(7+depth*63)*(.65+.35*Math.sin(i*3.7+t));
+      var a=(1-depth)*(.10+.05*Math.sin(t*.8+i));
+      var light=wctx.createLinearGradient(x-width,y,x+width,y);
+      light.addColorStop(0,'rgba('+pal.foam+',0)');light.addColorStop(.5,'rgba('+pal.foam+','+a+')');light.addColorStop(1,'rgba('+pal.foam+',0)');
+      wctx.fillStyle=light;wctx.fillRect(x-width,y,width*2,1+depth);
+    }
+  }
+
+  function drawTouches(now) {
+    touches=touches.filter(function(touch){return now-touch.born<2400;});
+    touches.forEach(function(touch){
+      var p=(now-touch.born)/2400;
+      for(var i=0;i<3;i++){
+        var age=p-i*.11;if(age<=0)continue;
+        var r=10+age*Math.min(W*.15,150),a=Math.pow(1-p,2)*.5;
+        wctx.beginPath();wctx.ellipse(touch.x,touch.y,r,r*.24,0,0,TAU);
+        wctx.strokeStyle='rgba('+pal.foam+','+a+')';wctx.lineWidth=1;wctx.stroke();
+      }
+    });
+  }
+
   function traceCrest(pts, dy) {
     dy = dy || 0;
     wctx.beginPath();
@@ -274,6 +344,7 @@
     var breath = Math.sin(t * .26) * H * .004;   // 整片海轻轻呼吸
 
     wctx.clearRect(0, 0, W, H);
+    drawMoon(now || 0);drawMeteors(now || 0);
 
     // 地平线附近的雾：远处的水化进天光里，不留生硬的接缝
     var hz = H * HORIZON;
@@ -357,6 +428,7 @@
         wctx.setLineDash([]);
       }
     }
+    drawMoonlight(now || 0, hzDraw);
   }
 
   /* ══════════ 主循环 ══════════ */
@@ -368,6 +440,7 @@
 
     drawWaves(now);
     drawRipples(now);
+    drawTouches(now);
     drawMotes(now);
     raf = requestAnimationFrame(frame);
   }
@@ -376,6 +449,11 @@
   function updateDepth(){var p=Math.min(1,Math.max(0,scrollY/(cover.parentNode.offsetHeight||H)));var f=Math.max(0,Math.min(1,(p-.36)/.48));cover.style.opacity=String(1-f*f*(3-2*f));if(reduced.matches)drawWaves(0);}
   function sync(){cancelAnimationFrame(raf);running=active&&!document.hidden&&!reduced.matches;if(running)raf=requestAnimationFrame(frame);else if(reduced.matches)drawWaves(0);}
   addEventListener('pointermove',function(e){if(reduced.matches||!active)return;tx=(e.clientX/Math.max(1,W)-.5)*1.1;td=e.clientY/Math.max(1,H)-.5;},{passive:true});
+  addEventListener('pointerdown',function(e){
+    if(reduced.matches||!active||e.button!==0||e.target.closest('button,a,input,select,dialog'))return;
+    if(scrollY>H*.12||e.clientY<H*HORIZON||e.clientY+scrollY>cover.parentNode.offsetHeight)return;
+    touches.push({x:e.clientX,y:e.clientY,born:performance.now()});if(touches.length>5)touches.shift();
+  },{passive:true});
   addEventListener('scroll',updateDepth,{passive:true});addEventListener('resize',function(){resize();updateDepth();},{passive:true});
   document.addEventListener('visibilitychange',sync);reduced.addEventListener('change',sync);
   new IntersectionObserver(function(entries){active=entries[0].isIntersecting;sync();}).observe(cover.parentNode);
