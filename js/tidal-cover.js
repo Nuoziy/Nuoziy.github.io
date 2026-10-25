@@ -25,7 +25,7 @@
   var surgeAt = 0;
   var px = 0;          // 指针横向 → 海面漂移
   var drift = 0;       // 指针纵向 → 浪高
-  var meteors = [], touches = [], nextMeteor = 0;
+  var meteors = [], touches = [], leapers = [], nextMeteor = 0, nextLeap = 0;
   var tx = 0, td = 0;  // 目标值
 
   /* 海平线的高度（占屏高比例），竖屏会低一点，海面才够开阔 */
@@ -99,6 +99,7 @@
       c.setTransform(dpr, 0, 0, dpr, 0, 0);
     });
 
+    leapers=[];nextLeap=0;
     makeStars();
     makeMotes();
     makeRipples();
@@ -248,12 +249,14 @@
   }
 
   function moonPosition() {
-    return {x: W * .78 + px * 13, y: (W < 700 ? Math.max(H * .4, H * .19 + 175) : H * .30) + drift * 10,
-      r: W < 700 ? Math.min(42, W * .095) : Math.min(64, W * .047)};
+    return {x: W * .5 + px * 10, y: H * .35 + drift * 8,
+      r: Math.min(138, W * .28, H * .19)};
   }
 
   function drawMoon(now) {
     var m = moonPosition(), x = m.x, y = m.y, r = m.r;
+    cover.parentNode.style.setProperty('--moon-x', x+'px');
+    cover.parentNode.style.setProperty('--moon-y', y+'px');
     var glow = wctx.createRadialGradient(x, y, r * .5, x, y, r * 3.2);
     glow.addColorStop(0, 'rgba(244, 225, 249, .23)');
     glow.addColorStop(.48, 'rgba(222, 240, 255, .10)');
@@ -326,6 +329,44 @@
         wctx.beginPath();wctx.ellipse(touch.x,touch.y,r,r*.24,0,0,TAU);
         wctx.strokeStyle='rgba('+pal.foam+','+a+')';wctx.lineWidth=1;wctx.stroke();
       }
+    });
+  }
+
+  function seaSurfaceAt(x, layer, now) {
+    var t=now/1000,L=layers[layer],depth=layer/(layers.length-1),seaH=H*(1-HORIZON);
+    var amp=seaH*L.amp*(1+drift*.5),base=H*HORIZON+seaH*L.d+Math.sin(t*.26)*H*.004;
+    var k=TAU/(W*L.wl);
+    return base+Math.sin(x*k+t*L.sp+L.k+px)*amp
+      +Math.sin(x*k*2.3-t*L.sp*.58+L.k*1.7)*amp*.38
+      +Math.sin(x*k*.45+t*.08)*amp*.7
+      +Math.sin(x*k*6.7+t*L.sp*1.9+L.k*3)*amp*.15*depth;
+  }
+
+  function drawLeapingDots(now) {
+    if(reduced.matches)return;
+    if(scrollY>H*.05){leapers=[];nextLeap=0;return;}
+    if(!nextLeap)nextLeap=now+350;
+    if(now>=nextLeap){
+      var count=Math.random()<.42?2:1,origin=W*(.12+Math.random()*.76);
+      for(var i=0;i<count&&leapers.length<4;i++)leapers.push({
+        x:origin+i*14,travel:(Math.random()<.5?-1:1)*(26+Math.random()*55),
+        height:Math.min(78,H*.11)*(.5+Math.random()*.5),duration:1500+Math.random()*650,
+        radius:2.2+Math.random()*1.25,layer:Math.random()<.55?2:3,born:now-i*110
+      });
+      nextLeap=now+1100+Math.random()*1100;
+    }
+    leapers=leapers.filter(function(dot){
+      var p=(now-dot.born)/dot.duration;
+      if(p>=1){
+        if(p<1.2)touches.push({x:dot.x+dot.travel,y:seaSurfaceAt(dot.x+dot.travel,dot.layer,now),born:now});
+        return false;
+      }
+      // A parabola lifts each dot from its wave and returns it to the moving surface.
+      var x=dot.x+dot.travel*p,y=seaSurfaceAt(x,dot.layer,now)-4*dot.height*p*(1-p);
+      wctx.beginPath();wctx.arc(x,y-dot.radius*.25,dot.radius,0,TAU);
+      wctx.fillStyle='rgba(8,12,19,.87)';wctx.fill();
+      wctx.lineWidth=.6;wctx.strokeStyle='rgba(175,207,231,.28)';wctx.stroke();
+      return true;
     });
   }
 
@@ -440,6 +481,7 @@
 
     drawWaves(now);
     drawRipples(now);
+    drawLeapingDots(now);
     drawTouches(now);
     drawMotes(now);
     raf = requestAnimationFrame(frame);

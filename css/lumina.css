@@ -173,3 +173,9 @@ body,[data-theme=dark] body{background:#e9e2e8}.wallpaper{position:fixed;inset:0
 .contribution-day.snake-food:hover{transform:scale(1.12)}
 .snake-block.fed{animation:snake-bite .45s ease-out}@keyframes snake-bite{0%{filter:brightness(1.1);box-shadow:0 0 0 0 #e9a1b17a}50%{filter:brightness(1.2);box-shadow:0 0 0 5px #e9a1b124}100%{filter:none;box-shadow:0 0 0 8px #e9a1b100}}
 @media(prefers-reduced-motion:reduce){.snake-block.fed{animation:none}.contribution-day.snake-food{transform:none}}
+
+/* The wordmark belongs to the moon; its position follows the same soft parallax. */
+@font-face{font-family:'Moon Serif';font-style:italic;font-weight:400;font-display:swap;src:url('/vendor/katex/fonts/KaTeX_Main-Italic.woff2') format('woff2')}
+.cover-name{left:var(--moon-x,50%);top:var(--moon-y,35%);padding:16px 18px;font:italic 400 clamp(42px,5vw,66px)/1.15 'Moon Serif',Georgia,serif;letter-spacing:.055em;text-indent:.055em;transform:translate(-50%,-50%) translateY(calc(var(--entry-depth,0)*-70px)) scale(calc(1 - var(--entry-depth,0)*.1));filter:drop-shadow(0 3px 16px var(--ec-title-glow)) blur(calc(var(--entry-depth,0)*4px))}.cover-name>span{text-shadow:none}.cover-name:focus-visible{border-radius:50%;outline-color:#a6cce080}
+@media(max-width:700px){.cover-name{font-size:42px;padding:14px 16px;letter-spacing:.04em;text-indent:.04em}}
+@media(prefers-reduced-motion:reduce){.cover-name{transform:translate(-50%,-50%);filter:none}}
