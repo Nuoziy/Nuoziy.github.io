@@ -12,6 +12,9 @@
     reducedMotion.addEventListener('change',()=>{if(reducedMotion.matches)wallpaper.pause();else{if(!wallpaper.getAttribute('src'))wallpaper.src=wallpaper.dataset.src;wallpaper.play().catch(()=>{});}});
   }
   if(cover){
+    const enterBlog=()=>window.scrollTo({top:cover.offsetTop+cover.offsetHeight-24,behavior:reducedMotion.matches?'instant':'smooth'});
+    $('.cover-name').addEventListener('click',enterBlog);
+    document.addEventListener('keydown',event=>{if(event.key==='Enter'&&scrollY<cover.offsetHeight*.6&&!event.target.closest('input,textarea,select,button,a,dialog')){event.preventDefault();enterBlog();}});
     let queued=false;
     const updateCover=()=>{const progress=Math.min(1,Math.max(0,scrollY/cover.offsetHeight));document.documentElement.style.setProperty('--cover-progress',String(progress));document.documentElement.style.setProperty('--entry-depth',String(reducedMotion.matches?0:progress));queued=false;};
     addEventListener('scroll',()=>{if(!queued){queued=true;requestAnimationFrame(updateCover);}},{passive:true});
